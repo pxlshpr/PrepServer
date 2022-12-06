@@ -19,10 +19,7 @@ extension SyncController {
             .with(\.$meal)
             .first()
         
-        if let deletedAt = deviceFoodItem.deletedAt, deletedAt > 0 {
-            guard let serverFoodItem else { throw ServerSyncError.foodItemNotFound }
-            try await deleteServerFoodItem(serverFoodItem, on: db)
-        } else if let serverFoodItem {
+        if let serverFoodItem {
             try await updateServerFoodItem(serverFoodItem, with: deviceFoodItem, on: db)
         } else {
             try await createNewServerFoodItem(with: deviceFoodItem, on: db)
@@ -139,10 +136,5 @@ extension SyncController {
             mealId: try meal?.requireID()
         )
         try await foodItem.save(on: db)
-    }
-
-    func deleteServerFoodItem(_ serverFoodItem: FoodItem, on db: Database) async throws {
-        serverFoodItem.softDelete()
-        try await serverFoodItem.update(on: db)
     }
 }

@@ -38,7 +38,12 @@ final class FoodItem: Model, Content {
         let timestamp = Date().timeIntervalSince1970
         self.createdAt = timestamp
         self.updatedAt = timestamp
-        self.deletedAt = nil
+        
+        if deviceFoodItem.isDeleted {
+            self.deletedAt = timestamp
+        } else {
+            self.deletedAt = nil
+        }
        
         self.amount = deviceFoodItem.amount
         self.sortPosition = Int16(deviceFoodItem.sortPosition)
@@ -84,12 +89,13 @@ final class FoodItem: Model, Content {
         self.sortPosition = Int16(deviceFoodItem.sortPosition)
         self.markedAsEatenAt = deviceFoodItem.markedAsEatenAt
         
-        self.updatedAt = Date().timeIntervalSince1970
-    }
-
-    func softDelete() {
         let timestamp = Date().timeIntervalSince1970
-        self.deletedAt = timestamp
+        if deviceFoodItem.isDeleted {
+            self.deletedAt = timestamp
+        } else {
+            self.deletedAt = nil
+        }
+        
         self.updatedAt = timestamp
     }
 }

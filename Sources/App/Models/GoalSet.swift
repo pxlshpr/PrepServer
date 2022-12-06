@@ -33,6 +33,12 @@ final class GoalSet: Model, Content {
         self.createdAt = timestamp
         self.updatedAt = timestamp
         
+        if deviceGoalSet.isDeleted {
+            self.deletedAt = timestamp
+        } else {
+            self.deletedAt = nil
+        }
+        
         self.name = deviceGoalSet.name
         self.emoji = deviceGoalSet.emoji
         self.type = deviceGoalSet.type
@@ -46,12 +52,13 @@ extension GoalSet {
         self.emoji = deviceGoalSet.emoji
         self.type = deviceGoalSet.type
         self.goals = deviceGoalSet.goals
-        self.updatedAt = Date().timeIntervalSince1970
-    }
-    
-    func softDelete() {
+        
         let timestamp = Date().timeIntervalSince1970
-        self.deletedAt = timestamp
+        if deviceGoalSet.isDeleted {
+            self.deletedAt = timestamp
+        } else {
+            self.deletedAt = nil
+        }
         self.updatedAt = timestamp
     }
 }
