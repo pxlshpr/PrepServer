@@ -18,26 +18,27 @@ extension SyncController {
             .first()
 
         //TODO: Maybe it's redudant that we're soft deleting it here and should instead do it in the create or update step itself? Detect if there's a deletedAt timestamp, and if so update it
-        if let deletedAt = deviceMeal.deletedAt, deletedAt > 0 {
-            guard let serverMeal else {
-                /// If it doesn't exist, create it anyway, as it would get created with the `deleteAt` timestamp,
-                /// and get sent back for hard deletion, while maintaining the history of it here on the server
-                /// (we will still be clearing it out with periodic cleanups anyway).
-                try await createNewServerMeal(with: deviceMeal, on: db)
-                return
-            }
-            try await deleteServerMeal(serverMeal, on: db)
-        } else if let serverMeal {
+//        if let deletedAt = deviceMeal.deletedAt, deletedAt > 0 {
+//            guard let serverMeal else {
+//                /// If it doesn't exist, create it anyway, as it would get created with the `deleteAt` timestamp,
+//                /// and get sent back for hard deletion, while maintaining the history of it here on the server
+//                /// (we will still be clearing it out with periodic cleanups anyway).
+//                try await createNewServerMeal(with: deviceMeal, on: db)
+//                return
+//            }
+//            try await deleteServerMeal(serverMeal, on: db)
+//        } else
+        if let serverMeal {
             try await updateServerMeal(serverMeal, with: deviceMeal, on: db)
         } else {
             try await createNewServerMeal(with: deviceMeal, on: db)
         }
     }
     
-    func deleteServerMeal(_ serverMeal: Meal, on db: Database) async throws {
-        serverMeal.softDelete()
-        try await serverMeal.update(on: db)
-    }
+//    func deleteServerMeal(_ serverMeal: Meal, on db: Database) async throws {
+//        serverMeal.softDelete()
+//        try await serverMeal.update(on: db)
+//    }
     
     func updateServerMeal(_ serverMeal: Meal, with deviceMeal: PrepDataTypes.Meal, on db: Database) async throws {
         /// If the `Day`'s don't match, fetch the new one and supply it to the `updateServerMeal` function

@@ -36,7 +36,7 @@ final class Meal: Model, Content {
         
         /// If this was deleted on device before being synced to the server, we create it
         /// with a timestamp as a soft-deleted model to begin with
-        if let deviceMeal = deviceMeal.deletedAt, deviceMeal > 0 {
+        if deviceMeal.isDeleted {
             self.deletedAt = timestamp
         } else {
             self.deletedAt = nil
@@ -65,12 +65,12 @@ extension Meal {
             self.markedAsEatenAt = nil
         }
         
-        self.updatedAt = Date().timeIntervalSince1970
-    }
-    
-    func softDelete() {
         let timestamp = Date().timeIntervalSince1970
-        self.deletedAt = timestamp
+        if deviceMeal.isDeleted {
+            self.deletedAt = timestamp
+        } else {
+            self.deletedAt = nil
+        }
         self.updatedAt = timestamp
     }
 }
