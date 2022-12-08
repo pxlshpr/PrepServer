@@ -21,6 +21,9 @@ final class User: Model, Content {
     @Children(for: \.$user) var tokenRedemptions: [TokenRedemption]
     @Children(for: \.$user) var userFoods: [UserFood]
 
+    @OptionalChild(for: \.$user)
+    var fastingTimer: UserFastingTimer?
+    
     init() { }
     
     init(
