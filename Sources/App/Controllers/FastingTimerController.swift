@@ -52,7 +52,7 @@ struct FastingTimerController: RouteCollection {
     
     func updates(req: Request) async throws -> HTTPStatus {
         let _ = try await getUpdates(on: req.db)
-        let contentState = FastingTimerContentState(fastingState: .init(lastMealTime: Date().moveDayBy(-7)))
+        let contentState = FastingTimerContentState(fastingState: .init(lastMealTime: Date().moveDayBy(-2)))
         try await req.application.apns.client.sendLiveActivityNotification(
             .init(
                 expiration: .immediately,
@@ -62,7 +62,7 @@ struct FastingTimerController: RouteCollection {
                 event: .update,
                 timestamp: Int(Date().timeIntervalSince1970)
             ),
-            deviceToken: "8014aecb8074acfd36058112291d02c74c867d0f82b44ec563a97422fbba7a7e5aa2aae0bff300bb32870b3a7e2ae8c3b344f06e9e1c87f6b9f52889844b3d1d9e2e1230519d52863868a7d6670b38ab",
+            deviceToken: "80f8fc9cf273764993088381f89f6a45fd2725083b7baddb982ce5d2904b8ce7b4fe8bc20e4a87b905d1be85d86abe1f722ef8b7f1800540ed4a58a76e997010f78ded97b1f6f6ec2a173d04163e0df7",
             deadline: .distantFuture
         )
         print("💌 PUSH SENT")
