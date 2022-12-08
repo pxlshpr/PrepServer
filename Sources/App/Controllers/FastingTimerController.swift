@@ -62,9 +62,10 @@ struct FastingTimerController: RouteCollection {
                 event: .update,
                 timestamp: Int(Date().timeIntervalSince1970)
             ),
-            deviceToken: "",
+            deviceToken: "8014aecb8074acfd36058112291d02c74c867d0f82b44ec563a97422fbba7a7e5aa2aae0bff300bb32870b3a7e2ae8c3b344f06e9e1c87f6b9f52889844b3d1d9e2e1230519d52863868a7d6670b38ab",
             deadline: .distantFuture
         )
+        print("💌 PUSH SENT")
         return .ok
     }
     
