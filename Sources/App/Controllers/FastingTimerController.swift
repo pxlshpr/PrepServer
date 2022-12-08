@@ -2,6 +2,7 @@ import Fluent
 import Vapor
 import PrepDataTypes
 import FluentSQL
+import APNS
 
 struct FastingTimerController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
@@ -48,9 +49,22 @@ struct FastingTimerController: RouteCollection {
             try await newTimer.save(on: db)
         }
     }
-
+    
     func updates(req: Request) async throws -> HTTPStatus {
         let _ = try await getUpdates(on: req.db)
+        let contentState = FastingTimerContentState(fastingState: .init(lastMealTime: Date().moveDayBy(-7)))
+        try await req.application.apns.client.sendLiveActivityNotification(
+            .init(
+                expiration: .immediately,
+                priority: .immediately,
+                appID: "com.pxlshpr.Prep",
+                contentState: contentState,
+                event: .update,
+                timestamp: Int(Date().timeIntervalSince1970)
+            ),
+            deviceToken: "",
+            deadline: .distantFuture
+        )
         return .ok
     }
     
@@ -87,4 +101,13 @@ struct FastingTimerUpdate: Codable {
 
 enum FastingTimerError: Error {
     case userNotFound
+}
+
+public struct FastingTimerContentState: Codable, Hashable {
+    // Dynamic stateful properties about your activity go here!
+    public var fastingState: FastingTimerState
+    
+    public init(fastingState: FastingTimerState) {
+        self.fastingState = fastingState
+    }
 }

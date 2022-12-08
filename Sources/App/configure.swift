@@ -60,4 +60,50 @@ public func configure(_ app: Application) throws {
     /// Start Job Queue for
     try app.queues.use(.redis(url: "redis://127.0.0.1:6379"))
     app.queues.scheduleEvery(FastingTimerUpdateJob(), minutes: 1)
+    
+    try app.configurePush()
+}
+
+import APNS
+
+extension Application {
+    func configurePush() throws {
+      let appleECP8PrivateKey =
+"""
+-----BEGIN PRIVATE KEY-----
+MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgk8rTF7VIFsGuwr+l
+zDhS+w46Wty+SL6rLyd+5+gjW+KgCgYIKoZIzj0DAQehRANCAAQVaxb/VQpMafZe
+e0BWOKHudL5XM0V6apAfvcFSUSPp/IAai/xsW1lA5sxz39zlXm4ZAu0Ju3YPL5W1
+uZF1zf2z
+-----END PRIVATE KEY-----
+"""
+        let authenticationMethod = APNSClientConfiguration.AuthenticationMethod.jwt(
+            privateKey: try .loadFrom(string: appleECP8PrivateKey),
+            keyIdentifier: "Y8QK4K56CK",
+            teamIdentifier: "3EQ4PU3P2V"
+        )
+        
+        let config = APNSClientConfiguration(
+            authenticationMethod: authenticationMethod,
+            environment: .sandbox
+        )
+        apns.containers.use(
+            config,
+            eventLoopGroupProvider: .createNew,
+            responseDecoder: JSONDecoder(),
+            requestEncoder: JSONEncoder(),
+            backgroundActivityLogger: logger,
+            as: .default
+        )
+        
+//        apns.configuration = try .init(
+//            authenticationMethod: .jwt(
+//                key: .private(pem: Data(appleECP8PrivateKey.utf8)),
+//                keyIdentifier: "Y8QK4K56CK",
+//                teamIdentifier: "3EQ4PU3P2V"
+//            ),
+//            topic: "com.pxlshpr.Prep",
+//            environment: .production
+//        )
+    }
 }
