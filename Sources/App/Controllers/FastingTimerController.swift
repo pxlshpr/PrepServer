@@ -1,11 +1,13 @@
 import Fluent
 import Vapor
 import PrepDataTypes
+import FluentSQL
 
 struct FastingTimerController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let group = routes.grouped("fastingTimer")
         group.on(.POST, "", use: update)
+        group.on(.GET, "updates", use: updates)
     }
     
     func update(req: Request) async throws -> HTTPStatus {
@@ -45,8 +47,42 @@ struct FastingTimerController: RouteCollection {
             let newTimer = UserFastingTimer(form: form, userId: try user.requireID())
             try await newTimer.save(on: db)
         }
-
     }
+
+    func updates(req: Request) async throws -> HTTPStatus {
+        let _ = try await getUpdates(on: req.db)
+        return .ok
+    }
+    
+    func getUpdates(on db: Database) async throws -> [FastingTimerUpdate] {
+        guard let sql = db as? SQLDatabase else {
+            // The underlying database driver is _not_ SQL.
+            return []
+        }
+        let updates = try await sql
+            .raw("""
+ SELECT
+     x.id,
+     CAST(x.last_notification_hour AS Int),
+     CAST(x.hours AS Int)
+ FROM
+ (
+     SELECT
+         *,
+         FLOOR(((CAST(EXTRACT(epoch FROM NOW()) AS INT) - last_meal_at) / 3600)) as hours
+     FROM user_fasting_timers
+ ) AS x
+ where x.hours > x.last_notification_hour;
+""")
+            .all(decoding: FastingTimerUpdate.self)
+        return updates
+    }
+}
+
+struct FastingTimerUpdate: Codable {
+    let id: UUID
+    let last_notification_hour: Int
+    let hours: Int
 }
 
 enum FastingTimerError: Error {

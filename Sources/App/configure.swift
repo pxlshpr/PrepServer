@@ -54,10 +54,10 @@ public func configure(_ app: Application) throws {
     
     app.http.server.configuration.port = 8083
 
-    // register routes
+    /// register routes
     try routes(app)
     
+    /// Start Job Queue for
     try app.queues.use(.redis(url: "redis://127.0.0.1:6379"))
-    
-    app.queues.scheduleEvery(EmailJob(), minutes: 1)
+    app.queues.scheduleEvery(FastingTimerUpdateJob(), minutes: 1)
 }
