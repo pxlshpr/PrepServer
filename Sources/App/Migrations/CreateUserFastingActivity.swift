@@ -18,6 +18,7 @@ struct CreateUserFastingActivity: AsyncMigration {
             .field("push_token", .string, .required)
             .field("last_notification_sent_at", .double, .required)
 
+            .unique(on: "push_token")
             .create()
     }
     
