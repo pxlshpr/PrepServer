@@ -18,6 +18,7 @@ struct FastingActivityController: RouteCollection {
                 .first() else {
                 return .notFound
             }
+            print("posting test notification to: \(firstActivity.pushToken)")
             try await sendNotification(for: firstActivity, req: req)
             return .ok
         } catch {
