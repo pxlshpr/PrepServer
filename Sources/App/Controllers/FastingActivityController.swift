@@ -13,11 +13,15 @@ struct FastingActivityController: RouteCollection {
     }
     
     func update(req: Request) async throws -> HTTPStatus {
+        print("🛠 Decoding form")
         let form = try req.content.decode(FastingActivityForm.self)
-        
+        print("🛠 Form decoded")
+
         if let lastMealAt = form.lastMealAt {
+            print("🛠 Calling addOrUpdateEntry")
             try await addOrUpdateEntry(at: lastMealAt, with: form, on: req.db)
         } else {
+            print("🛠 Calling removeEntry")
             try await removeEntry(forUserId: form.userId, on: req.db)
         }
         
@@ -102,21 +106,23 @@ extension FastingActivityController {
     }
     
     func addOrUpdateEntry(at lastMealAt: Double, with form: FastingActivityForm, on db: Database) async throws {
+        print("🛠 Fetching existingActivity with \(form.pushToken)")
         let existingActivity = try await UserFastingActivity.query(on: db)
             .filter(\.$pushToken == form.pushToken)
             .first()
         
         if let existingActivity {
+            print("🛠 Have existing activity, updating")
             /// If we have an entry already, update it
             existingActivity.update(with: form)
             try await existingActivity.update(on: db)
         } else {
+            print("🛠 No existing activity, fetching user with: \(form.userId)")
             /// Otherwise, add it
             guard let user = try await User.find(form.userId, on: db) else {
                 throw FastingActivityError.userNotFound
             }
-            // Otherwise, first check if the user exists
-            // Then add it
+            print("🛠 Creating new activity and saving")
             let newActivity = UserFastingActivity(form: form, userId: try user.requireID())
             try await newActivity.save(on: db)
         }
