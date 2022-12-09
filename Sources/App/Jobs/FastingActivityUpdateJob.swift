@@ -6,7 +6,6 @@ import PrepDataTypes
 
 extension Date {
     var maldivesTime: String {
-        let calendar = Calendar.current
         let formatter = DateFormatter()
         formatter.timeZone = TimeZone(secondsFromGMT: 3600 * 5)
         formatter.dateFormat = "h:mm a"
