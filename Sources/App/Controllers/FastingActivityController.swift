@@ -15,7 +15,7 @@ struct FastingActivityController: RouteCollection {
         do {
             print("getting first activity")
             guard let firstActivity = try await UserFastingActivity.query(on: req.db)
-//                .filter(\.$deletedAt == nil)
+                .filter(\.$deletedAt == nil)
                 .first() else {
                 return .notFound
             }
