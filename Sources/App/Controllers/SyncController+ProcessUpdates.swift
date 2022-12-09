@@ -71,6 +71,10 @@ extension SyncController {
         /// QuickMealItem
         //TODO: QuickMealItem
 
+        /// FastingAcitivity
+        if let fastingActivities = updates.fastingActivities {
+            try await processUpdatedDeviceFastingActivities(fastingActivities, user: user, on: db)
+        }
     }
     
     

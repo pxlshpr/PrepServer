@@ -7,6 +7,9 @@ final class UserFastingActivity: Model, Content {
     
     @ID(key: .id) var id: UUID?
     @Parent(key: "user_id") var user: User
+    @Field(key: "created_at") var createdAt: Double
+    @Field(key: "updated_at") var updatedAt: Double
+    @OptionalField(key: "deleted_at") var deletedAt: Double?
 
     @Field(key: "last_meal_at") var lastMealAt: Double
     @OptionalField(key: "next_meal_at") var nextMealAt: Double?
@@ -19,36 +22,52 @@ final class UserFastingActivity: Model, Content {
     init() { }
     
     init(
-        form: FastingActivityForm,
+        with deviceFastingActivity: PrepDataTypes.FastingActivity,
         userId: User.IDValue
     ) {
-        guard let lastMealAt = form.lastMealAt else { return }
-        
-        self.lastMealAt = lastMealAt
-        self.nextMealAt = form.nextMealAt
-        self.nextMealName = form.nextMealName
-        self.countdownType = form.countdownType
-        
-        self.lastNotificationSentAt = Date().timeIntervalSince1970
-//        self.lastNotificationSentAt = lastMealAt
-        self.pushToken = form.pushToken
-        
+        self.id = deviceFastingActivity.id
         self.$user.id = userId
+        self.pushToken = deviceFastingActivity.pushToken
+
+        self.lastMealAt = deviceFastingActivity.lastMealAt
+        self.nextMealAt = deviceFastingActivity.nextMealAt
+        self.nextMealName = deviceFastingActivity.nextMealName
+        self.countdownType = deviceFastingActivity.countdownType
+        
+        let timestamp = Date().timeIntervalSince1970
+        self.lastNotificationSentAt = Date().timeIntervalSince1970
+        self.createdAt = timestamp
+        self.updatedAt = timestamp
+        
+        if deviceFastingActivity.isDeleted {
+            self.deletedAt = timestamp
+        } else {
+            self.deletedAt = nil
+        }
     }
 }
 
 extension UserFastingActivity {
-    func update(with form: FastingActivityForm) {
-        guard let lastMealAt = form.lastMealAt else { return }
+    
+    func update(with deviceFastingActivity: PrepDataTypes.FastingActivity) {
         
-        self.lastMealAt = lastMealAt
-        self.nextMealAt = form.nextMealAt
-        self.nextMealName = form.nextMealName
-        self.countdownType = form.countdownType
-        
-        self.lastNotificationSentAt = Date().timeIntervalSince1970
-        
-        /// `pushToken` is assumed to not change for the lifetime of the activity
+        /// `pushToken` never changes
+
+        self.lastMealAt = deviceFastingActivity.lastMealAt
+        self.nextMealAt = deviceFastingActivity.nextMealAt
+        self.nextMealName = deviceFastingActivity.nextMealName
+        self.countdownType = deviceFastingActivity.countdownType
+
+        let timestamp = Date().timeIntervalSince1970
+        self.lastNotificationSentAt = timestamp
+
+        if deviceFastingActivity.isDeleted {
+            self.deletedAt = timestamp
+        } else {
+            self.deletedAt = nil
+        }
+        self.updatedAt = timestamp
+
     }
 }
 

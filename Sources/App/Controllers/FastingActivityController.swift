@@ -7,27 +7,10 @@ import APNS
 struct FastingActivityController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let group = routes.grouped("fastingActivity")
-        group.on(.POST, "", use: update)
         group.on(.GET, "sendNotifications", use: sendNotifications)
         group.on(.GET, "sendTestNotification", use: sendTestNotification)
     }
     
-    func update(req: Request) async throws -> HTTPStatus {
-        print("🛠 Decoding form")
-        let form = try req.content.decode(FastingActivityForm.self)
-        print("🛠 Form decoded")
-
-        if let lastMealAt = form.lastMealAt {
-            print("🛠 Calling addOrUpdateEntry")
-            try await addOrUpdateEntry(at: lastMealAt, with: form, on: req.db)
-        } else {
-            print("🛠 Calling removeEntry")
-            try await removeEntry(forUserId: form.userId, on: req.db)
-        }
-        
-        return .ok
-    }
-
     func sendTestNotification(req: Request) async throws -> HTTPStatus {
         do {
             guard let firstActivity = try await UserFastingActivity.query(on: req.db)
@@ -99,36 +82,6 @@ struct FastingActivityController: RouteCollection {
         return updates
 /**
  */
-    }
-}
-
-extension FastingActivityController {
-    func removeEntry(forUserId userId: UUID, on db: Database) async throws {
-        /// Remove the row if it exists
-        /// Sanity check that this would stop the notifications from being sent
-    }
-    
-    func addOrUpdateEntry(at lastMealAt: Double, with form: FastingActivityForm, on db: Database) async throws {
-        print("🛠 Fetching existingActivity with \(form.pushToken)")
-        let existingActivity = try await UserFastingActivity.query(on: db)
-            .filter(\.$pushToken == form.pushToken)
-            .first()
-        
-        if let existingActivity {
-            print("🛠 Have existing activity, updating")
-            /// If we have an entry already, update it
-            existingActivity.update(with: form)
-            try await existingActivity.update(on: db)
-        } else {
-            print("🛠 No existing activity, fetching user with: \(form.userId)")
-            /// Otherwise, add it
-            guard let user = try await User.find(form.userId, on: db) else {
-                throw FastingActivityError.userNotFound
-            }
-            print("🛠 Creating new activity and saving")
-            let newActivity = UserFastingActivity(form: form, userId: try user.requireID())
-            try await newActivity.save(on: db)
-        }
     }
 }
 
