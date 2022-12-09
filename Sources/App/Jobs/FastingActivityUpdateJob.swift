@@ -16,6 +16,9 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
             print("💼 Updating activity")
             try await update(activity, app: context.application)
         }
+        if activities.isEmpty {
+            print("💼 No activities requiring an update")
+        }
     }
     
     func update(_ activity: UserFastingActivity, app: Application) async throws {
