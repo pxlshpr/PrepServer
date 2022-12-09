@@ -23,12 +23,14 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
     
     func update(_ activity: UserFastingActivity, app: Application) async throws {
         do {
-            print("💼 Posting notification to: \(activity.pushToken)")
             try await sendNotification(for: activity, app: app)
-            return
+            
+            activity.lastNotificationSentAt = Date().timeIntervalSince1970
+            try await activity.update(on: app.db)
+            
+            print("💼 Posted notification and set lastNotificationSentAt")
         } catch {
             print("Error running job: \(error)")
-            return
         }
     }
 }
