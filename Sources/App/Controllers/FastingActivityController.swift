@@ -7,7 +7,6 @@ import APNS
 struct FastingActivityController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let group = routes.grouped("fastingActivity")
-        group.on(.GET, "sendNotifications", use: sendNotifications)
         group.on(.GET, "sendTestNotification", use: sendTestNotification)
     }
     
@@ -20,18 +19,11 @@ struct FastingActivityController: RouteCollection {
                 return .notFound
             }
             print("posting test notification to: \(firstActivity.pushToken)")
-            try await sendNotification(for: firstActivity, application: req.application)
+            try await sendNotification(for: firstActivity, app: req.application)
             return .ok
         } catch {
             return .badRequest
         }
-    }
-    
-    func sendNotifications(req: Request) async throws -> HTTPStatus {
-        let activities = try await getActivitiesPendingUpdate(on: req.db)
-        //TODO: Send notifications and update lastNotificationAt fields
-        print("We have \(activities.count) activities to send updates to")
-        return .ok
     }
     
     func getActivitiesPendingUpdate(on db: Database) async throws -> [UserFastingActivity] {
@@ -57,12 +49,13 @@ struct FastingActivityController: RouteCollection {
          FLOOR((last_notification_sent_at - last_meal_at) / 3600) as last_notification_hour,
          FLOOR((CAST(EXTRACT(epoch FROM NOW()) AS INT) - last_meal_at) / 3600) as elapsed_hours
      FROM user_fasting_activities
- ) AS x
- where x.elapsed_hours > x.last_notification_hour;
+ ) AS x;
 """)
             .all(decoding: UserFastingActivity.self)
         return updates
 /**
+ ) AS x
+ where x.elapsed_hours > x.last_notification_hour;
  */
     }
 }

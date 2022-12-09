@@ -32,10 +32,19 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
 
 extension UserFastingActivity {
     var fastingState: FastingTimerState {
-        FastingTimerState(
-            lastMealTime: <#T##Date#>,
-            nextMeal: <#T##DayMeal?#>,
-            countdownType: <#T##FastingTimerCountdownType#>
+        
+        let nextMealTime: Date?
+        if let nextMealAt {
+            nextMealTime = Date(timeIntervalSince1970: nextMealAt)
+        } else {
+            nextMealTime = nil
+        }
+        
+        return FastingTimerState(
+            lastMealTime: Date(timeIntervalSince1970: lastMealAt),
+            nextMealName: nextMealName,
+            nextMealTime: nextMealTime,
+            countdownType: countdownType
         )
     }
 
@@ -45,18 +54,12 @@ extension UserFastingActivity {
 }
 
 func sendNotification(for activity: UserFastingActivity, app: Application) async throws {
-    //TODO: Send actual lastMealTime
-    let fastingState = FastingTimerState(
-        lastMealTime: Date().moveDayBy(-2)
-    )
-    let contentState = FastingActivityContentState(fastingState: fastingState)
-    
     try await app.apns.client.sendLiveActivityNotification(
         .init(
             expiration: .immediately,
             priority: .immediately,
             appID: "com.pxlshpr.Prep",
-            contentState: contentState,
+            contentState: activity.contentState,
             event: .update,
             timestamp: Int(Date().timeIntervalSince1970)
         ),
