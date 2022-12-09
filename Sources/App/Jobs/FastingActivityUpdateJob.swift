@@ -11,15 +11,15 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
     
     func run(context: QueueContext) async throws {
 
-        print("💼 Running FastingActivityUpdateJob")
+        print("💼 \(Date().shortTime) Running FastingActivityUpdateJob")
 
         let activities = try await FastingActivityController().getActivitiesPendingUpdate(on: context.application.db)
         for activity in activities {
-            print("💼 Updating activity")
+            print("    • Updating activity")
             try await update(activity, app: context.application)
         }
         if activities.isEmpty {
-            print("💼 No activities requiring an update")
+            print("    • No activities requiring an update")
         }
     }
     
@@ -30,9 +30,9 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
             activity.lastNotificationSentAt = Date().timeIntervalSince1970
             try await activity.update(on: app.db)
             
-            print("💼 Posted notification and set lastNotificationSentAt")
+            print("    • 💌 Notification Sent")
         } catch {
-            print("⚠️ Error running job: \(error)")
+            print("    • ⚠️ Error running job: \(error)")
         }
     }
 }
@@ -73,5 +73,4 @@ func sendNotification(for activity: UserFastingActivity, app: Application) async
         deviceToken: activity.pushToken,
         deadline: .distantFuture
     )
-    print("💌 PUSH SENT")
 }
