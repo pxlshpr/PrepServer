@@ -49,13 +49,12 @@ struct FastingActivityController: RouteCollection {
          FLOOR((last_notification_sent_at - last_meal_at) / 3600) as last_notification_hour,
          FLOOR((CAST(EXTRACT(epoch FROM NOW()) AS INT) - last_meal_at) / 3600) as elapsed_hours
      FROM user_fasting_activities
- ) AS x;
+ ) AS x
+ where x.elapsed_hours > x.last_notification_hour;
 """)
             .all(decoding: UserFastingActivity.self)
         return updates
 /**
- ) AS x
- where x.elapsed_hours > x.last_notification_hour;
  */
     }
 }
