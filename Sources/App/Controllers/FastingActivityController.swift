@@ -14,6 +14,7 @@ struct FastingActivityController: RouteCollection {
     func sendTestNotification(req: Request) async throws -> HTTPStatus {
         do {
             guard let firstActivity = try await UserFastingActivity.query(on: req.db)
+                .filter(\.$deletedAt == nil)
                 .first() else {
                 return .notFound
             }
