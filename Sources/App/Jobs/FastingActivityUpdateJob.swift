@@ -4,6 +4,16 @@ import Queues
 import FluentSQL
 import PrepDataTypes
 
+extension Date {
+    var maldivesTime: String {
+        let calendar = Calendar.current
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone(secondsFromGMT: 3600 * 5)
+        formatter.dateFormat = "h:mm a"
+        return formatter.string(from: self).lowercased()
+    }
+}
+
 /// Goes through all `UserFastingActivity` entires that are pending an update and pushes a notification to the devices of the `User` it belongs to.
 ///
 /// Pending entires are determined by comparing the hours passed (since `lastMealAt`) to the stored `lastNotificationHour` field.
@@ -11,7 +21,7 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
     
     func run(context: QueueContext) async throws {
 
-        print("💼 \(Date().shortTime) Running FastingActivityUpdateJob")
+        print("💼 \(Date().maldivesTime) Running FastingActivityUpdateJob")
 
         let activities = try await FastingActivityController().getActivitiesPendingUpdate(on: context.application.db)
         for activity in activities {
