@@ -12,7 +12,7 @@ struct CreateUserFastingActivity: AsyncMigration {
             .field("countdown_type", .int16, .required)
         
             .field("push_token", .string, .required)
-            .field("last_notification_sent_at", .int, .required)
+            .field("last_notification_sent_at", .double, .required)
 
             .unique(on: "user_id")
             .create()
