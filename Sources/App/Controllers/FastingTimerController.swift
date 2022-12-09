@@ -62,7 +62,7 @@ struct FastingTimerController: RouteCollection {
                 event: .update,
                 timestamp: Int(Date().timeIntervalSince1970)
             ),
-            deviceToken: "80f8fc9cf273764993088381f89f6a45fd2725083b7baddb982ce5d2904b8ce7b4fe8bc20e4a87b905d1be85d86abe1f722ef8b7f1800540ed4a58a76e997010f78ded97b1f6f6ec2a173d04163e0df7",
+            deviceToken: "80ab9048784d14753a36f87dc7280e798eca2bf39023d87ef4aae614677ee5e4da5322aa3748f3f6023db389491d88c6855484dc0b0d7a034d3cdbda702ef87a4aee50814d097225ac19a3ccdea41b1d",
             deadline: .distantFuture
         )
         print("💌 PUSH SENT")
