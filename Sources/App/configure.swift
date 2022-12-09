@@ -50,7 +50,7 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateQuickMealItem())
     
     /// prerequisite: User
-    app.migrations.add(CreateUserFastingTimer())
+    app.migrations.add(CreateUserFastingActivity())
     
     app.http.server.configuration.port = 8083
 
@@ -59,7 +59,7 @@ public func configure(_ app: Application) throws {
     
     /// Start Job Queue for
     try app.queues.use(.redis(url: "redis://127.0.0.1:6379"))
-    app.queues.scheduleEvery(FastingTimerUpdateJob(), minutes: 1)
+    app.queues.scheduleEvery(FastingActivityUpdateJob(), minutes: 1)
     
     try app.configurePush()
 }

@@ -20,9 +20,7 @@ final class User: Model, Content {
     @Children(for: \.$user) var tokenAwards: [TokenAward]
     @Children(for: \.$user) var tokenRedemptions: [TokenRedemption]
     @Children(for: \.$user) var userFoods: [UserFood]
-
-    @OptionalChild(for: \.$user)
-    var fastingTimer: UserFastingTimer?
+    @Children(for: \.$user) var fastingActivities: [UserFastingActivity]
     
     init() { }
     
