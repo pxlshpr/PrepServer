@@ -10,7 +10,9 @@ import PrepDataTypes
 struct FastingActivityUpdateJob: AsyncScheduledJob {
     
     func run(context: QueueContext) async throws {
-        
+
+        print("💼 Running FastingActivityUpdateJob")
+
         let activities = try await FastingActivityController().getActivitiesPendingUpdate(on: context.application.db)
         for activity in activities {
             print("💼 Updating activity")
@@ -30,7 +32,7 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
             
             print("💼 Posted notification and set lastNotificationSentAt")
         } catch {
-            print("Error running job: \(error)")
+            print("⚠️ Error running job: \(error)")
         }
     }
 }
