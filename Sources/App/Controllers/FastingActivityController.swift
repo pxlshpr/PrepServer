@@ -20,32 +20,11 @@ struct FastingActivityController: RouteCollection {
                 return .notFound
             }
             print("posting test notification to: \(firstActivity.pushToken)")
-            try await sendNotification(for: firstActivity, req: req)
+            try await sendNotification(for: firstActivity, application: req.application)
             return .ok
         } catch {
             return .badRequest
         }
-    }
-    func sendNotification(for activity: UserFastingActivity, req: Request) async throws {
-        //TODO: Send actual lastMealTime
-        let fastingState = FastingTimerState(
-            lastMealTime: Date().moveDayBy(-2)
-        )
-        let contentState = FastingActivityContentState(fastingState: fastingState)
-        
-        try await req.application.apns.client.sendLiveActivityNotification(
-            .init(
-                expiration: .immediately,
-                priority: .immediately,
-                appID: "com.pxlshpr.Prep",
-                contentState: contentState,
-                event: .update,
-                timestamp: Int(Date().timeIntervalSince1970)
-            ),
-            deviceToken: activity.pushToken,
-            deadline: .distantFuture
-        )
-        print("💌 PUSH SENT")
     }
     
     func sendNotifications(req: Request) async throws -> HTTPStatus {
