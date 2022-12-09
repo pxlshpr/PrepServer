@@ -71,6 +71,28 @@ extension UserFastingActivity {
     }
 }
 
+//MARK: - UserFastingActivity → PrepDataTypes.FastingActivity
+
+extension PrepDataTypes.FastingActivity {
+    init?(from serverFastingActivity: UserFastingActivity) {
+        guard let id = serverFastingActivity.id else {
+            return nil
+        }
+        self.init(
+            id: id,
+            pushToken: serverFastingActivity.pushToken,
+            lastMealAt: serverFastingActivity.lastMealAt,
+            nextMealAt: serverFastingActivity.nextMealAt,
+            nextMealName: serverFastingActivity.nextMealName,
+            countdownType: serverFastingActivity.countdownType,
+            syncStatus: .synced,
+            updatedAt: serverFastingActivity.updatedAt,
+            deletedAt: serverFastingActivity.deletedAt
+        )
+    }
+}
+
+
 /**
  
  SQL:

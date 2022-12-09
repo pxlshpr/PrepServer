@@ -11,6 +11,7 @@ extension SyncController {
         let foods = try await updatedUserFoods(for: syncForm, db: db)
         let foodItems = try await updatedFoodItems(for: syncForm, db: db)
         let goalSets = try await updatedGoalSets(for: syncForm, db: db)
+        let fastingActivities = try await updatedFastingActivities(for: syncForm, db: db)
         
         return SyncForm.Updates(
             user: try await updatedDeviceUser(for: syncForm, db: db),
@@ -18,7 +19,8 @@ extension SyncController {
             foods: foods,
             foodItems: foodItems,
             goalSets: goalSets,
-            meals: meals
+            meals: meals,
+            fastingActivities: fastingActivities
         )
     }
     
@@ -92,7 +94,18 @@ extension SyncController {
                 PrepDataTypes.GoalSet(from: goalSet)
             }
     }
-    
+
+    func updatedFastingActivities(for syncForm: SyncForm, db: Database) async throws -> [PrepDataTypes.FastingActivity]? {
+        let userId = try await userId(from: syncForm, db: db)
+        return try await UserFastingActivity.query(on: db)
+            .filter(\.$user.$id == userId)
+            .filter(\.$updatedAt > syncForm.versionTimestamp)
+            .all()
+            .compactMap { fastingActivity in
+                PrepDataTypes.FastingActivity(from: fastingActivity)
+            }
+    }
+
     func updatedFoodItems(for syncForm: SyncForm, db: Database) async throws -> [PrepDataTypes.FoodItem]? {
         /// Similar to meals, get all the food items that have an attached meal within the requested date window
         /// Otherwise, if it has a parent food, return all of them irrespective of time
