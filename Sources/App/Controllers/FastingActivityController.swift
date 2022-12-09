@@ -65,6 +65,7 @@ struct FastingActivityController: RouteCollection {
     func sendNotifications(req: Request) async throws -> HTTPStatus {
         let activities = try await getActivitiesPendingUpdate(on: req.db)
         //TODO: Send notifications and update lastNotificationAt fields
+        print("We have \(activities.count) activities to send updates to")
         return .ok
     }
     
@@ -88,14 +89,17 @@ struct FastingActivityController: RouteCollection {
  (
      SELECT
          *,
-         FLOOR((last_notification_at - last_meal_at) / 3600) as last_notification_hour,
+         FLOOR((last_notification_sent_at - last_meal_at) / 3600) as last_notification_hour,
          FLOOR((CAST(EXTRACT(epoch FROM NOW()) AS INT) - last_meal_at) / 3600) as elapsed_hours
      FROM user_fasting_activities
- ) AS x
- where x.elapsed_hours > x.last_notification_hour;
+ ) AS x;
 """)
             .all(decoding: UserFastingActivity.self)
         return updates
+/**
+ ) AS x
+ where x.elapsed_hours > x.last_notification_hour;
+ */
     }
 }
 
