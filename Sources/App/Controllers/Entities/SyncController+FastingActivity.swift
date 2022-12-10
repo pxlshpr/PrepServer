@@ -29,7 +29,10 @@ extension SyncController {
             .filter(\.$pushToken == pushToken)
             .filter(\.$id != id)
             .all()
-        print("We have \(invalidActivities.count) invalid activities to delete")
+        print("🛠 Deleting \(invalidActivities.count) invalid activities")
+        for activity in invalidActivities {
+            try await activity.delete(on: db)
+        }
     }
     
     func updateServerFastingActivity(_ serverFastingActivity: UserFastingActivity, with deviceFastingActivity: PrepDataTypes.FastingActivity, on db: Database) async throws {
