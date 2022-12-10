@@ -25,6 +25,12 @@ struct FastingActivityController: RouteCollection {
             return .badRequest
         }
     }
+
+    func getActivitiesDeletedMoreThanFiveMinutesAgo(on db: Database) async throws -> [UserFastingActivity] {
+        try await UserFastingActivity.query(on: db)
+            .filter(\.$deletedAt < Date().timeIntervalSince1970 - (5 * 60))
+            .all()
+    }
     
     func getActivitiesPendingUpdate(on db: Database) async throws -> [UserFastingActivity] {
         guard let sql = db as? SQLDatabase else {
@@ -54,8 +60,6 @@ struct FastingActivityController: RouteCollection {
 """)
             .all(decoding: UserFastingActivity.self)
         return updates
-/**
- */
     }
 }
 

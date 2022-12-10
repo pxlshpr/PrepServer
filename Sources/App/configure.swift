@@ -60,7 +60,8 @@ public func configure(_ app: Application) throws {
     /// Start Job Queue for
     try app.queues.use(.redis(url: "redis://127.0.0.1:6379"))
     app.queues.scheduleEvery(FastingActivityUpdateJob(), minutes: 1)
-    
+    app.queues.scheduleEvery(FastingActivityCleanupJob(), minutes: 1)
+
     try app.configurePush()
 }
 
