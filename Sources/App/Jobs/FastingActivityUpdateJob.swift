@@ -41,12 +41,10 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
             
             print("    • 💌 Notification Sent")
         } catch {
-            print("    • ⚠️ Error running job: \(error._code)")
-            if error._code == 410 {
-                /// This implies the token is expired—delete it
-                print("    • 🗑 Deleting activity \(activity.id!)")
-                try await activity.delete(on: app.db)
-            }
+            print("    • ⚠️ Error running job")
+            /// This implies the token is expired—delete it
+            print("        • 🗑 Deleting activity \(activity.id!)")
+            try await activity.delete(on: app.db)
         }
     }
 }
