@@ -16,10 +16,20 @@ extension SyncController {
             .first()
         
         if let serverFastingActivity {
+            /// Delete any `UserFastingActivity` containing the same `pushToken` but with a different `id`
+            try await deleteServerFastingActivitiesWith(pushToken: deviceFastingActivity.pushToken, exceptForId: deviceFastingActivity.id, on: db)
             try await updateServerFastingActivity(serverFastingActivity, with: deviceFastingActivity, on: db)
         } else {
             try await createNewServerFastingActivity(with: deviceFastingActivity, user: user, on: db)
         }
+    }
+    
+    func deleteServerFastingActivitiesWith(pushToken: String, exceptForId id: UUID, on db: Database) async throws {
+        let invalidActivities = try await UserFastingActivity.query(on: db)
+            .filter(\.$pushToken == pushToken)
+            .filter(\.$id != id)
+            .all()
+        print("We have \(invalidActivities.count) invalid activities to delete")
     }
     
     func updateServerFastingActivity(_ serverFastingActivity: UserFastingActivity, with deviceFastingActivity: PrepDataTypes.FastingActivity, on db: Database) async throws {
