@@ -35,12 +35,13 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
     func update(_ activity: UserFastingActivity, app: Application) async throws {
         do {
             
-            let lowPriority = !activity.elapsedTimeBlocks.isMultiple(of: 12)
-            
+//            let lowPriority = !activity.elapsedTimeBlocks.isMultiple(of: 12)
+            let lowPriority = false
+
 //            var activity = activity
-            if lowPriority {
+//            if lowPriority {
                 activity.nextMealName = "low prior"
-            }
+//            }
             
             try await sendNotification(
                 for: activity,
