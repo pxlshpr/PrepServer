@@ -12,7 +12,7 @@ struct FastingActivityCleanupJob: AsyncScheduledJob {
 
         let staleActivities = try await FastingActivityController().getActivitiesDeletedMoreThanFiveMinutesAgo(on: context.application.db)
         for staleActivity in staleActivities {
-            print("    • 🗑 Deleting activity \(staleActivity.id!)")
+            print("    • 🧹🗑 Deleting activity \(staleActivity.id!)")
             try await staleActivity.delete(on: context.application.db)
         }
         if staleActivities.isEmpty {
