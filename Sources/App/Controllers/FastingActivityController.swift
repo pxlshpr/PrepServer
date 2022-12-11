@@ -87,7 +87,7 @@ struct FastingActivityController: RouteCollection {
      SELECT
          *,
          FLOOR((last_notification_sent_at - last_meal_at) / (3600 / 12)) as last_notification_block,
-         FLOOR((CAST(EXTRACT(epoch FROM NOW()) AS INT) - last_meal_at) / (3600 / 12)) as elapsed_block
+         FLOOR((CAST(EXTRACT(epoch FROM NOW()) AS INT) - last_meal_at) / (3600 / 12)) as elapsed_blocks
      FROM user_fasting_activities
  ) AS x
  where x.elapsed_blocks > x.last_notification_block;
