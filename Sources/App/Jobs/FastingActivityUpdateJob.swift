@@ -41,7 +41,11 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
             /// are turned off.
 //            let lowPriority = !activity.elapsedTimeBlocks.isMultiple(of: 12)
             let lowPriority = false
-
+            
+            if let nextMealName = activity.nextMealName {
+                activity.nextMealName = "\(nextMealName) \(Date().maldivesTime)"
+            }
+            
             try await sendNotification(
                 for: activity,
                 lowPriority: lowPriority,
