@@ -49,17 +49,17 @@ final class UserFastingActivity: Model, Content {
 
 extension UserFastingActivity {
     
-    func update(with deviceFastingActivity: PrepDataTypes.FastingActivity) {
-        
-        /// `pushToken` never changes
+        func update(with deviceFastingActivity: PrepDataTypes.FastingActivity) {
+            
+            /// `pushToken` never changes
 
-        self.lastMealAt = deviceFastingActivity.lastMealAt
-        self.nextMealAt = deviceFastingActivity.nextMealAt
-        self.nextMealName = deviceFastingActivity.nextMealName
-        self.countdownType = deviceFastingActivity.countdownType
+            self.lastMealAt = deviceFastingActivity.lastMealAt
+            self.nextMealAt = deviceFastingActivity.nextMealAt
+            self.nextMealName = deviceFastingActivity.nextMealName
+            self.countdownType = deviceFastingActivity.countdownType
 
-        let timestamp = Date().timeIntervalSince1970
-        self.lastNotificationSentAt = timestamp
+            let timestamp = Date().timeIntervalSince1970
+            self.lastNotificationSentAt = timestamp
 
         if deviceFastingActivity.isDeleted {
             self.deletedAt = timestamp

@@ -32,7 +32,7 @@ struct FastingActivityController: RouteCollection {
             .all()
     }
     
-    func getActivitiesPendingUpdate(on db: Database) async throws -> [UserFastingActivity] {
+    func getActivitiesPendingUpdate_legacy(on db: Database) async throws -> [UserFastingActivity] {
         guard let sql = db as? SQLDatabase else {
             // The underlying database driver is _not_ SQL.
             return []
@@ -57,6 +57,40 @@ struct FastingActivityController: RouteCollection {
      FROM user_fasting_activities
  ) AS x
  where x.elapsed_hours > x.last_notification_hour;
+""")
+            .all(decoding: UserFastingActivity.self)
+        return updates
+    }
+    
+    func getActivitiesPendingUpdate(on db: Database) async throws -> [UserFastingActivity] {
+        
+        let numberOfUpdatesPerHour = 12
+        
+        guard let sql = db as? SQLDatabase else {
+            // The underlying database driver is _not_ SQL.
+            return []
+        }
+        
+        let updates = try await sql
+            .raw("""
+ SELECT
+     x.id,
+     x.user_id,
+     x.last_meal_at,
+     x.next_meal_at,
+     x.next_meal_name,
+     x.countdown_type,
+     x.push_token,
+     x.last_notification_sent_at
+ FROM
+ (
+     SELECT
+         *,
+         FLOOR((last_notification_sent_at - last_meal_at) / (3600 / 12)) as last_notification_block,
+         FLOOR((CAST(EXTRACT(epoch FROM NOW()) AS INT) - last_meal_at) / (3600 / 12)) as elapsed_block
+     FROM user_fasting_activities
+ ) AS x
+ where x.elapsed_blocks > x.last_notification_block;
 """)
             .all(decoding: UserFastingActivity.self)
         return updates

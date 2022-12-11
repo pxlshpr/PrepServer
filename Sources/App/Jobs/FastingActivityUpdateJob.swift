@@ -34,12 +34,23 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
     
     func update(_ activity: UserFastingActivity, app: Application) async throws {
         do {
-            try await sendNotification(for: activity, app: app)
+            
+            let lowPriority = !activity.elapsedTimeBlocks.isMultiple(of: 12)
+            
+            try await sendNotification(
+                for: activity,
+                lowPriority: lowPriority,
+                app: app
+            )
             
             activity.lastNotificationSentAt = Date().timeIntervalSince1970
             try await activity.update(on: app.db)
             
-            print("    • 💌 Notification Sent")
+            if lowPriority {
+                print("    • ✉️ (Low Priority) Notification Sent")
+            } else {
+                print("    • 💌 Notification Sent")
+            }
         } catch {
             print("    • ⚠️ Error running job")
             /// This implies the token is expired—delete it
@@ -50,6 +61,15 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
 }
 
 extension UserFastingActivity {
+    
+    var lastMealAtDate: Date {
+        Date(timeIntervalSince1970: lastMealAt)
+    }
+    
+    var elapsedTimeBlocks: Int {
+        Int(Date().timeIntervalSince(lastMealAtDate) / (3600.0 / 12.0))
+    }
+    
     var fastingState: FastingTimerState {
         
         let nextMealTime: Date?
@@ -72,11 +92,15 @@ extension UserFastingActivity {
     }
 }
 
-func sendNotification(for activity: UserFastingActivity, app: Application) async throws {
+func sendNotification(
+    for activity: UserFastingActivity,
+    lowPriority: Bool = false,
+    app: Application
+) async throws {
     try await app.apns.client.sendLiveActivityNotification(
         .init(
             expiration: .immediately,
-            priority: .immediately,
+            priority: lowPriority ? .consideringDevicePower : .immediately,
             appID: "com.pxlshpr.Prep",
             contentState: activity.contentState,
             event: .update,
