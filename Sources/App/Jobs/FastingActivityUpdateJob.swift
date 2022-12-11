@@ -37,7 +37,7 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
             
             let lowPriority = !activity.elapsedTimeBlocks.isMultiple(of: 12)
             
-            var activity = activity
+//            var activity = activity
             if lowPriority {
                 activity.nextMealName = "low prior"
             }
