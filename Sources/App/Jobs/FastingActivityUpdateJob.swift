@@ -35,14 +35,10 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
     func update(_ activity: UserFastingActivity, app: Application) async throws {
         do {
             
+            /// We've disabled this for now, ensuring all updates are high-priority
 //            let lowPriority = !activity.elapsedTimeBlocks.isMultiple(of: 12)
             let lowPriority = false
 
-//            var activity = activity
-//            if lowPriority {
-                activity.nextMealName = "low prior"
-//            }
-            
             try await sendNotification(
                 for: activity,
                 lowPriority: lowPriority,
@@ -52,11 +48,7 @@ struct FastingActivityUpdateJob: AsyncScheduledJob {
             activity.lastNotificationSentAt = Date().timeIntervalSince1970
             try await activity.update(on: app.db)
             
-            if lowPriority {
-                print("    • ✉️ (Low Priority) Notification Sent")
-            } else {
-                print("    • 💌 Notification Sent")
-            }
+            print("    • 💌 Notification Sent")
         } catch {
             print("    • ⚠️ Error running job")
             /// This implies the token is expired—delete it
