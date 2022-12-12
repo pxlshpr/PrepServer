@@ -28,8 +28,24 @@ final class PresetFood: Model, Content {
     
     init() { }
 
-    init(id: UUID? = nil, name: String) {
-        self.id = id
-        self.name = name
+    init(food: PrepDataTypes.Food, dataset: FoodDataset, datasetFoodId: String) {
+        self.id = food.id
+        self.createdAt = food.updatedAt
+        self.updatedAt = food.updatedAt
+        self.deletedAt = nil
+
+        self.name = food.name
+        self.emoji = food.emoji
+        self.amount = food.info.amount
+        self.nutrients = food.info.nutrients
+        self.sizes = food.info.sizes
+        self.numberOfTimesConsumed = 0
+        self.dataset = dataset
+
+        self.serving = food.info.serving
+        self.detail = food.detail
+        self.brand = food.brand
+        self.density = food.info.density
+        self.datasetFoodId = datasetFoodId
     }
 }

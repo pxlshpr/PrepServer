@@ -12,8 +12,9 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0"),
         .package(url: "https://github.com/vapor/queues-redis-driver.git", from: "1.0.0"),
+        /// We're using this revision to use the live activity APIs that are still in beta
         .package(url: "https://github.com/vapor/apns.git", revision: "3c9cfc4ae9c3cb8765ea4e99ca81688ab28d1493"),
-        .package(url: "https://github.com/pxlshpr/PrepDataTypes", from: "0.0.227"),
+        .package(url: "https://github.com/pxlshpr/PrepDataTypes", from: "0.0.233"),
     ],
     targets: [
         .target(
