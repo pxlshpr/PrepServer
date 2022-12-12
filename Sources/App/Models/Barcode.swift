@@ -25,10 +25,10 @@ final class Barcode: Model, Content {
         self.createdAt = Date().timeIntervalSince1970
     }
     
-    init(barcode: FoodBarcode, userFoodId: UserFood.IDValue? = nil, presetFoodId: PresetFood.IDValue? = nil) {
+    init(foodBarcode: FoodBarcode, userFoodId: UserFood.IDValue? = nil, presetFoodId: PresetFood.IDValue? = nil) {
         self.id = UUID()
-        self.payload = barcode.payload
-        self.symbology = barcode.symbology
+        self.payload = foodBarcode.payload
+        self.symbology = foodBarcode.symbology
         self.$userFood.id = userFoodId
         self.$presetFood.id = presetFoodId
         self.createdAt = Date().timeIntervalSince1970

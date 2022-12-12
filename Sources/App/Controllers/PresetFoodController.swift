@@ -16,11 +16,14 @@ struct PresetFoodController: RouteCollection {
 
         /// Save any barcodes
         for foodBarcode in form.food.info.barcodes {
-//            let barcode = Barcode(deviceBarcode: foodBarcode, userFoodId: try userFood.requireID())
-//            try await barcode.save(on: db)
+            let barcode = Barcode(
+                foodBarcode: foodBarcode,
+                presetFoodId: try presetFood.requireID()
+            )
+            try await barcode.save(on: req.db)
         }
         
-        print("Added: \(form.food.emoji) \(form.food.name)")
+        print("Created: \(form.food.emoji) \(form.food.name)")
         return .ok
     }
 }
