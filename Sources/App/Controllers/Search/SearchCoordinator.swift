@@ -50,8 +50,16 @@ class SearchCoordinator {
         let metadata = PageMetadata(page: params.page, per: params.per, total: 1000000)
         return Page(items: candidateResults, metadata: metadata)
     }
-    
+
     func search() async throws -> Page<FoodSearchResult> {
+        let results = try await searchFull()
+        return Page(
+            items: results.items.map { FoodSearchResult($0) },
+            metadata: results.metadata
+        )
+    }
+    
+    func search_() async throws -> Page<FoodSearchResult> {
         
         var idsToIgnore: [UUID] = []
         var candidateResults: [FoodSearchResult] = []
