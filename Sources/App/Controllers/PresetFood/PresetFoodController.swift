@@ -6,6 +6,7 @@ struct PresetFoodController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let group = routes.grouped("presetFoods")
         group.post("search", use: search)
+        group.post("searchFull", use: searchFull)
         group.post(use: create)
     }
     

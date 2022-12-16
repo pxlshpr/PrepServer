@@ -6,8 +6,14 @@ import PrepDataTypes
 extension PresetFoodController {
     func search(req: Request) async throws -> Page<FoodSearchResult> {
         let params = try req.content.decode(ServerFoodSearchParams.self)
-        return try await SearchCoordinator(params: params, db: req.db).search2()
+        return try await SearchCoordinator(params: params, db: req.db).search()
     }
+    
+    func searchFull(req: Request) async throws -> Page<PresetFood> {
+        let params = try req.content.decode(ServerFoodSearchParams.self)
+        return try await SearchCoordinator(params: params, db: req.db).searchFull()
+    }
+
 }
 
 extension ServerFoodSearchParams: Content { }
