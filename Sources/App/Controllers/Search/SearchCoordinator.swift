@@ -53,6 +53,9 @@ class SearchCoordinator {
 
     func search() async throws -> Page<FoodSearchResult> {
         let results = try await searchFull()
+        
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        
         return Page(
             items: results.items.map { FoodSearchResult($0) },
             metadata: results.metadata
