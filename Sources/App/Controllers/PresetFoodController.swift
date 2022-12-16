@@ -10,11 +10,15 @@ struct PresetFoodController: RouteCollection {
     
     func create(req: Request) async throws -> HTTPStatus {
         let form = try req.content.decode(PresetFoodForm.self)
+        print("Processing form: \(form.food.emoji) \(form.food.name)")
         
         let presetFood = PresetFood(food: form.food, dataset: form.dataset, datasetFoodId: form.id)
+        print("Created PresetFood, saving")
+        
         try await presetFood.save(on: req.db)
 
         /// Save any barcodes
+        print("Saving Barcodes")
         for foodBarcode in form.food.info.barcodes {
             let barcode = Barcode(
                 foodBarcode: foodBarcode,
