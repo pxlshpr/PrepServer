@@ -9,39 +9,8 @@ struct SearchResultsProvider {
     let db: Database
 //    let query: QueryBuilder<Food>
     let query: QueryBuilder<PresetFood>
-
-    func results(
-        startingFrom position: Int,
-        totalCount: Int,
-        previousResults: [FoodSearchResult],
-        idsToIgnore: [UUID]
-    ) async throws -> (picked: [FoodSearchResult], count: Int, allIds: [UUID]) {
-        print("🔍 \(name)")
-
-        let weNeedToStartAt = position - totalCount
-        let whatIsNeeded = params.per - previousResults.count
-        print ("    🔍 Getting up to \(whatIsNeeded) foods offset by \(weNeedToStartAt)")
-        
-        let start = CFAbsoluteTimeGetCurrent()
-        let results = try await query
-            .filter(\.$id !~ idsToIgnore)
-            .sort(\.$id) /// have this to ensure we always have a uniquely identifiable sort order (to disallow overlaps in pagination)
-            .all()
-            .map { FoodSearchResult($0) }
-        print ("    ⏱ results took: \(CFAbsoluteTimeGetCurrent()-start)s")
-        
-        guard weNeedToStartAt < results.count else {
-            print ("    🔍 Got back \(results.count) results, return nothing since \(weNeedToStartAt) is past the end index")
-            return ([], 0, [])
-        }
-        
-        let endIndex = min((weNeedToStartAt + whatIsNeeded), results.count)
-        print ("    🔍 Got back \(results.count) results, returning slice \(weNeedToStartAt)..<\(endIndex)")
-        let slice = results[weNeedToStartAt..<endIndex]
-        return (Array(slice), results.count, results.map { $0.id })
-    }
     
-    func resultsFull(
+    func results(
         startingFrom position: Int,
         totalCount: Int,
         previousResults: [PresetFood],
