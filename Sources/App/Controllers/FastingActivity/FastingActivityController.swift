@@ -64,7 +64,7 @@ struct FastingActivityController: RouteCollection {
     
     func getActivitiesPendingUpdate(on db: Database) async throws -> [UserFastingActivity] {
         
-        let numberOfUpdatesPerHour = 12
+//        let numberOfUpdatesPerHour = 12
         
         guard let sql = db as? SQLDatabase else {
             // The underlying database driver is _not_ SQL.
