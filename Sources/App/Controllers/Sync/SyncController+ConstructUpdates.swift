@@ -52,14 +52,20 @@ extension SyncController {
     
     func updatedDays(for syncForm: SyncForm, db: Database) async throws -> [PrepDataTypes.Day]? {
         
-        guard !syncForm.requestedCalendarDayStrings.isEmpty else {
-            return []
+        guard !syncForm.requestedCalendarDayStrings.isEmpty else { return [] }
+        let userId = try await userId(from: syncForm, db: db)
+        
+        let query: QueryBuilder<Day>
+        if syncForm.versionTimestamp > 0 {
+            query = Day.query(on: db)
+                .filter(\.$calendarDayString ~~ syncForm.requestedCalendarDayStrings)
+        } else {
+            /// Get *all* the `Day`s when syncing a brand new app install (version is 0)
+            query = Day.query(on: db)
         }
         
-        let userId = try await userId(from: syncForm, db: db)
-        return try await Day.query(on: db)
+        return try await query
             .filter(\.$user.$id == userId)
-            .filter(\.$calendarDayString ~~ syncForm.requestedCalendarDayStrings)
             .filter(\.$updatedAt > syncForm.versionTimestamp)
             .with(\.$goalSet)
             .all()
@@ -70,10 +76,21 @@ extension SyncController {
 
     func updatedMeals(for syncForm: SyncForm, db: Database) async throws -> [PrepDataTypes.Meal]? {
         let userId = try await userId(from: syncForm, db: db)
-        let meals = try await Meal.query(on: db)
-            .join(Day.self, on: \Meal.$day.$id == \Day.$id)
-            .filter(Day.self, \.$user.$id == userId)
-            .filter(Day.self, \.$calendarDayString ~~ syncForm.requestedCalendarDayStrings)
+        
+        let query: QueryBuilder<Meal>
+        if syncForm.versionTimestamp > 0 {
+            query = Meal.query(on: db)
+                .join(Day.self, on: \Meal.$day.$id == \Day.$id)
+                .filter(Day.self, \.$user.$id == userId)
+                .filter(Day.self, \.$calendarDayString ~~ syncForm.requestedCalendarDayStrings)
+        } else {
+            /// Get *all* the `Meal`s when syncing a brand new app install (version is 0)
+            query = Meal.query(on: db)
+                .join(Day.self, on: \Meal.$day.$id == \Day.$id)
+                .filter(Day.self, \.$user.$id == userId)
+        }
+
+        return try await query
             .filter(\.$updatedAt > syncForm.versionTimestamp)
             .with(\.$day)
             .with(\.$goalSet)
@@ -81,7 +98,6 @@ extension SyncController {
             .compactMap { meal in
                 PrepDataTypes.Meal(from: meal)
             }
-        return meals
     }
     
     func updatedGoalSets(for syncForm: SyncForm, db: Database) async throws -> [PrepDataTypes.GoalSet]? {
@@ -112,11 +128,23 @@ extension SyncController {
         /// So we need to create two separate queries here, and merge the results into one array
 
         let userId = try await userId(from: syncForm, db: db)
-        let mealFoodItems = try await FoodItem.query(on: db)
-            .join(Meal.self, on: \FoodItem.$meal.$id == \Meal.$id)
-            .join(Day.self, on: \Meal.$day.$id == \Day.$id)
-            .filter(Day.self, \.$user.$id == userId)
-            .filter(Day.self, \.$calendarDayString ~~ syncForm.requestedCalendarDayStrings)
+        
+        let query: QueryBuilder<FoodItem>
+        if syncForm.versionTimestamp > 0 {
+            query = FoodItem.query(on: db)
+                .join(Meal.self, on: \FoodItem.$meal.$id == \Meal.$id)
+                .join(Day.self, on: \Meal.$day.$id == \Day.$id)
+                .filter(Day.self, \.$user.$id == userId)
+                .filter(Day.self, \.$calendarDayString ~~ syncForm.requestedCalendarDayStrings)
+        } else {
+            /// Get *all* the `Meal`s when syncing a brand new app install (version is 0)
+            query = FoodItem.query(on: db)
+                .join(Meal.self, on: \FoodItem.$meal.$id == \Meal.$id)
+                .join(Day.self, on: \Meal.$day.$id == \Day.$id)
+                .filter(Day.self, \.$user.$id == userId)
+        }
+        
+        let mealFoodItems = try await query
             .filter(\.$updatedAt > syncForm.versionTimestamp)
             .with(\.$meal) { meal in
                 meal
