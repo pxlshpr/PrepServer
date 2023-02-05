@@ -12,6 +12,8 @@ final class Day: Model, Content {
     @Field(key: "updated_at") var updatedAt: Double
 
     @Field(key: "calendar_day_string") var calendarDayString: String
+    @Field(key: "marked_as_fasted") var markedAsFasted: Bool
+
     @OptionalField(key: "body_profile") var bodyProfile: BodyProfile?
 
     @Children(for: \.$day) var meals: [Meal]
@@ -33,6 +35,7 @@ final class Day: Model, Content {
 
         self.calendarDayString = deviceDay.calendarDayString
         self.bodyProfile = deviceDay.bodyProfile
+        self.markedAsFasted = deviceDay.markedAsFasted
     }
 }
 
@@ -67,6 +70,7 @@ extension PrepDataTypes.Day {
             calendarDayString: serverDay.calendarDayString,
             goalSet: goalSet,
             bodyProfile: serverDay.bodyProfile,
+            markedAsFasted: serverDay.markedAsFasted,
             meals: [],
             syncStatus: .synced,
             updatedAt: serverDay.updatedAt
