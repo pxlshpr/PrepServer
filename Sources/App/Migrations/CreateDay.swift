@@ -12,8 +12,8 @@ struct CreateDay: AsyncMigration {
             .field("updated_at", .double, .required)
 
             .field("calendar_day_string", .string, .required)
-            .field("body_profile", .json)
             .field("marked_as_fasted", .bool)
+            .field("body_profile", .json)
 
             .unique(on: "id")
             .create()

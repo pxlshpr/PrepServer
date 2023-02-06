@@ -43,6 +43,7 @@ extension Day {
     func update(with deviceDay: PrepDataTypes.Day, newGoalSetId: GoalSet.IDValue?) throws {
         self.$goalSet.id = newGoalSetId
         self.bodyProfile = deviceDay.bodyProfile
+        self.markedAsFasted = deviceDay.markedAsFasted
         self.updatedAt = Date().timeIntervalSince1970
     }
 }

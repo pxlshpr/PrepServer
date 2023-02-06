@@ -119,15 +119,23 @@ extension SyncController {
 
             /// If it exists, update it
             if let serverDay {
-                /// If the `GoalSet`'s don't match, fetch the new one and supply it to the `updateServerDay` function
+//                /// If the `GoalSet`'s don't match, fetch the new one and supply it to the `updateServerDay` function
+//                let newGoalSet: GoalSet?
+//                if let deviceGoalSetId = deviceDay.goalSet?.id,
+//                   serverDay.goalSet?.id != deviceGoalSetId
+//                {
+//                    guard let goalSet = try await GoalSet.find(deviceGoalSetId, on: db) else {
+//                        throw ServerSyncError.goalSetNotFound
+//                    }
+//                    newGoalSet = goalSet
+//                } else {
+//                    newGoalSet = nil
+//                }
+                
+                /// Fetch the updated `GoalSet`
                 let newGoalSet: GoalSet?
-                if let deviceGoalSetId = deviceDay.goalSet?.id,
-                   serverDay.goalSet?.id != deviceGoalSetId
-                {
-                    guard let goalSet = try await GoalSet.find(deviceGoalSetId, on: db) else {
-                        throw ServerSyncError.goalSetNotFound
-                    }
-                    newGoalSet = goalSet
+                if let deviceGoalSetId = deviceDay.goalSet?.id {
+                    newGoalSet = try await GoalSet.find(deviceGoalSetId, on: db)
                 } else {
                     newGoalSet = nil
                 }
