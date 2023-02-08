@@ -5,8 +5,8 @@ cd /home/ahmed/PrepBackups
 #file="prep-backup.sql"
 #pg_dump -U pxlshpr prep --exclude-table-data "preset_foods" > $file
 
+fileSchema="prep-schema.sql"
 fileData="prep-data.sql"
-fileSchema="prep-data.sql"
 pg_dump -U pxlshpr prep --schema-only > $fileSchema
 pg_dump -U pxlshpr prep --data-only --exclude-table-data "preset_foods" > $fileData
 
