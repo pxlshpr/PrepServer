@@ -37,6 +37,12 @@ extension SyncController {
         }
         return userId
     }
+
+    func updatedFoods(for syncForm: SyncForm, db: Database) async throws -> [PrepDataTypes.Food]? {
+        let userFoods = try await updatedUserFoods(for: syncForm, db: db) ?? []
+        let presetFoods = try await updatedPresetFoods(for: syncForm, db: db) ?? []
+        return userFoods + presetFoods
+    }
     
     func updatedUserFoods(for syncForm: SyncForm, db: Database) async throws -> [PrepDataTypes.Food]? {
         let userId = try await userId(from: syncForm, db: db)
@@ -45,6 +51,34 @@ extension SyncController {
             .filter(\.$updatedAt > syncForm.versionTimestamp)
             .with(\.$barcodes)
             .all()
+            .compactMap { userFood in
+                PrepDataTypes.Food(from: userFood)
+            }
+    }
+    
+    /// Gets any updated `PresetFood`s that are relevant to keep locally. These include `FoodItem`s that either
+    /// - belong to a `Meal` on a `Day` owned by the `User`, or
+    /// - has a parent `UserFood` owned by the `User`
+    func updatedPresetFoods(for syncForm: SyncForm, db: Database) async throws -> [PrepDataTypes.Food]? {
+        let userId = try await userId(from: syncForm, db: db)
+        let presetFoodsAsMealsItems = try await PresetFood.query(on: db)
+            .join(FoodItem.self, on: \FoodItem.$presetFood.$id == \PresetFood.$id)
+            .join(Meal.self, on: \FoodItem.$meal.$id == \Meal.$id)
+            .join(Day.self, on: \Meal.$day.$id == \Day.$id)
+            .filter(Day.self, \.$user.$id == userId)
+            .filter(\.$updatedAt > syncForm.versionTimestamp)
+            .with(\.$barcodes)
+            .all()
+
+        let presetFoodsAsChildFoods = try await PresetFood.query(on: db)
+            .join(FoodItem.self, on: \FoodItem.$presetFood.$id == \PresetFood.$id)
+            .join(UserFood.self, on: \FoodItem.$parentUserFood.$id == \UserFood.$id)
+            .filter(UserFood.self, \.$user.$id == userId)
+            .filter(\.$updatedAt > syncForm.versionTimestamp)
+            .with(\.$barcodes)
+            .all()
+        let presetFoods = presetFoodsAsMealsItems + presetFoodsAsChildFoods
+        return presetFoods
             .compactMap { userFood in
                 PrepDataTypes.Food(from: userFood)
             }
