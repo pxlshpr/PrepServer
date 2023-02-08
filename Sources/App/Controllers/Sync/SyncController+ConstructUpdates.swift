@@ -9,7 +9,6 @@ extension SyncController {
         let days = try await updatedDays(for: syncForm, db: db)
         let meals = try await updatedMeals(for: syncForm, db: db)
         let foods = try await updatedFoods(for: syncForm, db: db)
-        print("returning \(foods?.count ?? 0) foods")
         let foodItems = try await updatedFoodItems(for: syncForm, db: db)
         let goalSets = try await updatedGoalSets(for: syncForm, db: db)
         let fastingActivities = try await updatedFastingActivities(for: syncForm, db: db)

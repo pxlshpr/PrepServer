@@ -41,7 +41,7 @@ class SearchCoordinator {
             position += results.picked.count
             
             /// If we have enough, stop getting the results (we're still getting the total count though)
-            guard position < params.endIndex else {
+            guard position <= params.endIndex else {
                 print("✅ Have enough results, ending early (\(CFAbsoluteTimeGetCurrent()-mainStart)s)")
                 print(" ")
                 break
