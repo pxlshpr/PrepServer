@@ -86,13 +86,13 @@ extension SyncController {
     
     func updatedDays(for syncForm: SyncForm, db: Database) async throws -> [PrepDataTypes.Day]? {
         
-        guard !syncForm.requestedCalendarDayStrings.isEmpty else { return [] }
+//        guard !syncForm.requestedCalendarDayStrings.isEmpty else { return [] }
         let userId = try await userId(from: syncForm, db: db)
         
         let query: QueryBuilder<Day>
         if syncForm.versionTimestamp > 0 {
             query = Day.query(on: db)
-                .filter(\.$calendarDayString ~~ syncForm.requestedCalendarDayStrings)
+//                .filter(\.$calendarDayString ~~ syncForm.requestedCalendarDayStrings)
         } else {
             /// Get *all* the `Day`s when syncing a brand new app install (version is 0)
             query = Day.query(on: db)
@@ -116,7 +116,7 @@ extension SyncController {
             query = Meal.query(on: db)
                 .join(Day.self, on: \Meal.$day.$id == \Day.$id)
                 .filter(Day.self, \.$user.$id == userId)
-                .filter(Day.self, \.$calendarDayString ~~ syncForm.requestedCalendarDayStrings)
+//                .filter(Day.self, \.$calendarDayString ~~ syncForm.requestedCalendarDayStrings)
         } else {
             /// Get *all* the `Meal`s when syncing a brand new app install (version is 0)
             query = Meal.query(on: db)
@@ -169,7 +169,7 @@ extension SyncController {
                 .join(Meal.self, on: \FoodItem.$meal.$id == \Meal.$id)
                 .join(Day.self, on: \Meal.$day.$id == \Day.$id)
                 .filter(Day.self, \.$user.$id == userId)
-                .filter(Day.self, \.$calendarDayString ~~ syncForm.requestedCalendarDayStrings)
+//                .filter(Day.self, \.$calendarDayString ~~ syncForm.requestedCalendarDayStrings)
         } else {
             /// Get *all* the `Meal`s when syncing a brand new app install (version is 0)
             query = FoodItem.query(on: db)
