@@ -32,7 +32,7 @@ struct SyncController: RouteCollection {
 
     func processSyncForm(_ syncForm: SyncForm, db: Database) async throws {
         if !syncForm.isEmpty {
-            print("📱→ Received \(syncForm.description)")
+            Logger.log("📱→ Received \(syncForm.description)")
         }
 
         if let updates = syncForm.updates {
@@ -120,77 +120,4 @@ enum ServerSyncError: Error {
 
 extension SyncForm: Content {
     
-}
-
-func log(_ message: String) {
-    func getDocumentsDirectory() -> URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return paths[0]
-    }
-    
-    let filename = getDocumentsDirectory().appendingPathComponent("output.txt")
-
-    do {
-        try message.write(to: filename, atomically: true, encoding: String.Encoding.utf8)
-        print("Wrote to: \(filename)")
-    } catch {
-        // failed to write file – bad permissions, bad filename, missing permissions, or more likely it can't be converted to the encoding
-        print("Could not wrote to: \(filename) – \(error)")
-    }
-}
-
-
-class Logger {
-
-    static var directoryURL: URL? {
-        let directoryPath = "\(FileManager.default.currentDirectoryPath)/Logs"
-        if !FileManager.default.fileExists(atPath: directoryPath) {
-            do {
-                print("Creating: \(directoryPath)")
-                try FileManager.default.createDirectory(atPath: directoryPath, withIntermediateDirectories: true, attributes: nil)
-            } catch {
-                print("Error creating directory: \(error.localizedDescription)");
-            }
-        }
-        
-        return URL(fileURLWithPath: directoryPath)
-    }
-    
-    static var logFile: URL? {
-        guard let directoryURL else { return nil }
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        let dateString = formatter.string(from: Date())
-        let fileName = "server_\(dateString).log"
-        
-        return directoryURL.appendingPathComponent(fileName)
-    }
-
-    static func log(_ message: String) {
-        guard let logFile else {
-            return
-        }
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss"
-        formatter.timeZone = .init(secondsFromGMT: 5 * 3600)
-        let timestamp = formatter.string(from: Date())
-        let string =  "[\(timestamp)] " + message
-        guard let data = (string + "\n").data(using: String.Encoding.utf8) else { return }
-
-        do {
-            if FileManager.default.fileExists(atPath: logFile.path) {
-                let fileHandle = try FileHandle(forWritingTo: logFile)
-                fileHandle.seekToEndOfFile()
-                fileHandle.write(data)
-                fileHandle.closeFile()
-            } else {
-                try string.write(to: logFile, atomically: true, encoding: String.Encoding.utf8)
-            }
-            print("Wrote to: \(logFile)")
-        } catch {
-            print("Could not wrote to: \(logFile) – \(error)")
-        }
-    }
 }
