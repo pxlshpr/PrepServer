@@ -71,9 +71,6 @@ struct SyncController: RouteCollection {
             deviceModelName: "server",
             versionTimestamp: timestamp
         )
-        if !syncForm.isEmpty {
-            print("💧→ Sending \(syncForm.description)")
-        }
         return syncForm
     }
     
