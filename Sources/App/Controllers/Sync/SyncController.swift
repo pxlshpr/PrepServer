@@ -32,7 +32,7 @@ struct SyncController: RouteCollection {
 
     func processSyncForm(_ syncForm: SyncForm, db: Database) async throws {
         if !syncForm.isEmpty {
-            Logger.log("📱→ Received \(syncForm.description)")
+            syncForm.log()
         }
 
         if let updates = syncForm.updates {
@@ -117,3 +117,5 @@ enum ServerSyncError: Error {
 extension SyncForm: Content {
     
 }
+
+//MARK: Move to PrepDataTypes
