@@ -31,8 +31,8 @@ struct SyncController: RouteCollection {
         
         /// If either request or response `SyncForm` is not empty, log it
         if !requestSyncForm.isEmpty || !responseSyncForm.isEmpty {
-            requestSyncForm.log(emoji: "📱", isRequest: true)
-            responseSyncForm.log(emoji: "💧", isRequest: false)
+            requestSyncForm.log(emoji: "📱", isRequest: true, includeBreakdown: !requestSyncForm.isInitialSync)
+            responseSyncForm.log(emoji: "💧", isRequest: false, includeBreakdown: !requestSyncForm.isInitialSync)
             PrepDataTypes.Logger.log("************************")
             PrepDataTypes.Logger.log(" ")
             PrepDataTypes.Logger.log(" ")
