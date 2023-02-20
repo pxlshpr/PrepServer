@@ -27,8 +27,8 @@ class Logger {
         return directoryURL.appendingPathComponent(fileName)
     }
 
-    static func log(_ message: String, print: Bool = true) {
-        if print {
+    static func log(_ message: String, silent: Bool = true) {
+        if !silent {
             print(message)
         }
         
