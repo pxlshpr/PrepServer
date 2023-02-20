@@ -40,8 +40,8 @@ class Logger {
         formatter.dateFormat = "HH:mm:ss"
         formatter.timeZone = .init(secondsFromGMT: 5 * 3600)
         let timestamp = formatter.string(from: Date())
-        let string =  "[\(timestamp)] " + message
-        guard let data = (string + "\n").data(using: String.Encoding.utf8) else { return }
+        let string =  "[\(timestamp)] " + message + "\n"
+        guard let data = string.data(using: String.Encoding.utf8) else { return }
 
         do {
             if FileManager.default.fileExists(atPath: logFile.path) {
