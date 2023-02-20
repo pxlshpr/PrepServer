@@ -32,7 +32,7 @@ struct SyncController: RouteCollection {
 
     func processSyncForm(_ syncForm: SyncForm, db: Database) async throws {
         if !syncForm.isEmpty {
-            syncForm.log()
+            syncForm.log(emoji: "📱", isRequest: true)
         }
 
         if let updates = syncForm.updates {
