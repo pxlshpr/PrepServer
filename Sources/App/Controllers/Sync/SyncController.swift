@@ -68,10 +68,6 @@ struct SyncController: RouteCollection {
         )
         if !syncForm.isEmpty {
             print("💧→ Sending \(syncForm.description)")
-        } else {
-            let message = "💧→ Empty response"
-            print(message)
-            Logger.log(message)
         }
         return syncForm
     }
