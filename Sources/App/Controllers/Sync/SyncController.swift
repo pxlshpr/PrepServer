@@ -33,6 +33,9 @@ struct SyncController: RouteCollection {
         if !requestSyncForm.isEmpty || !responseSyncForm.isEmpty {
             requestSyncForm.log(emoji: "📱", isRequest: true)
             responseSyncForm.log(emoji: "💧", isRequest: false)
+            PrepDataTypes.Logger.log("************************")
+            PrepDataTypes.Logger.log(" ")
+            PrepDataTypes.Logger.log(" ")
         }
         
         return responseSyncForm
