@@ -159,7 +159,8 @@ class Logger {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
         let timestamp = formatter.string(from: Date())
-        guard let data = (timestamp + ": " + message + "\n").data(using: String.Encoding.utf8) else { return }
+        let string = timestamp + ": " + message
+        guard let data = (string + "\n").data(using: String.Encoding.utf8) else { return }
 
         do {
             if FileManager.default.fileExists(atPath: logFile.path) {
@@ -168,7 +169,8 @@ class Logger {
                 fileHandle.write(data)
                 fileHandle.closeFile()
             } else {
-                try data.write(to: logFile, options: .atomicWrite)
+                try string.write(to: logFile, atomically: true, encoding: String.Encoding.utf8)
+//                try data.write(to: logFile, options: .atomicWrite)
             }
             print("Wrote to: \(logFile)")
         } catch {
