@@ -9,6 +9,7 @@ struct SyncController: RouteCollection {
         sync.on(.POST, "", body: .collect(maxSize: "20mb"), use: performSync)
         sync.on(.POST, "image", body: .collect(maxSize: "20mb"), use: saveImage)
         sync.on(.POST, "json", body: .collect(maxSize: "20mb"), use: saveJSON)
+        sync.on(.POST, "log", body: .collect(maxSize: "20mb"), use: saveLog)
     }
     
     func saveImage(req: Request) async throws -> String {
@@ -20,6 +21,12 @@ struct SyncController: RouteCollection {
     func saveJSON(req: Request) async throws -> String {
         let jsonFile = try req.content.decode(FileContent.self)
         saveFile(jsonFile, type: .json, to: .repository(.json))
+        return ""
+    }
+
+    func saveLog(req: Request) async throws -> String {
+        let logFile = try req.content.decode(FileContent.self)
+        saveFile(logFile, type: .log, to: .repository(.log))
         return ""
     }
 

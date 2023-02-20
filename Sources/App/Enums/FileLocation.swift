@@ -15,7 +15,12 @@ enum FileLocation {
             guard suffix.count == 6 else { return nil }
             let folder1 = suffix.prefix(3)
             let folder2 = suffix.suffix(3)
-            return "\(path)/Public/Uploads/\(fileType.directory)/\(folder1)/\(folder2)"
+            switch fileType {
+            case .image, .json:
+                return "\(path)/Public/Uploads/\(fileType.directory)/\(folder1)/\(folder2)"
+            case .log:
+                return "\(path)/Logs"
+            }
         }
     }
     
@@ -34,6 +39,8 @@ enum FileLocation {
             return filePathForImage(with: id)
         case .json:
             return filePathForJSON(with: id)
+        case .log:
+            return filePathForLog(with: id)
         }
     }
     
@@ -45,5 +52,10 @@ enum FileLocation {
     func filePathForJSON(with id: String) -> String? {
         guard let directoryPath = directoryPath(for: id) else { return nil }
         return "\(directoryPath)/\(id).json"
+    }
+    
+    func filePathForLog(with id: String) -> String? {
+        guard let directoryPath = directoryPath(for: id) else { return nil }
+        return "\(directoryPath)/\(id).log"
     }
 }

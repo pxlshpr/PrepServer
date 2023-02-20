@@ -17,7 +17,25 @@ func saveFile(_ file: FileContent, type: FileType, to location: FileLocation) {
         }
     }
     
-    let result = FileManager.default.createFile(atPath: filePath, contents: file.data, attributes: nil)
-    print("saving at \(filePath)")
-    print("success: \(result)")
+    switch type {
+    case .image, .json:
+        print("saving at \(filePath)")
+        let result = FileManager.default.createFile(atPath: filePath, contents: file.data, attributes: nil)
+        print("success: \(result)")
+    case .log:
+        if FileManager.default.fileExists(atPath: filePath) {
+            guard let fileHandle = FileHandle(forWritingAtPath: filePath) else {
+                print("couldn't get FileHandler for: \(filePath)")
+                return
+            }
+            fileHandle.seekToEndOfFile()
+            fileHandle.write(file.data)
+            fileHandle.closeFile()
+            print("appended at \(filePath)")
+        } else {
+            print("saving at \(filePath)")
+            let result = FileManager.default.createFile(atPath: filePath, contents: file.data, attributes: nil)
+            print("success: \(result)")
+        }
+    }
 }
