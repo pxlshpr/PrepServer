@@ -174,8 +174,9 @@ class Logger {
 
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
+        formatter.timeZone = .init(secondsFromGMT: 5 * 3600)
         let timestamp = formatter.string(from: Date())
-        let string = timestamp + ": " + message
+        let string =  "[\(timestamp)] " + message
         guard let data = (string + "\n").data(using: String.Encoding.utf8) else { return }
 
         do {
