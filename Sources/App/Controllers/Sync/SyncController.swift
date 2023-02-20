@@ -27,10 +27,13 @@ struct SyncController: RouteCollection {
         let requestSyncForm = try req.content.decode(SyncForm.self)
 
         try await processSyncForm(requestSyncForm, db: req.db)
-        let responseSyncForm = try await constructSyncForm(for: requestSyncForm, db: req.db)
+        var responseSyncForm = try await constructSyncForm(for: requestSyncForm, db: req.db)
         
         /// If either request or response `SyncForm` is not empty, log it
         if !requestSyncForm.isEmpty || !responseSyncForm.isEmpty {
+            
+            responseSyncForm.removeRedundantUpdates(from: responseSyncForm)
+            
             requestSyncForm.log(emoji: "📱", isRequest: true, includeBreakdown: !requestSyncForm.isInitialSync)
             responseSyncForm.log(emoji: "💧", isRequest: false, includeBreakdown: !requestSyncForm.isInitialSync)
             PrepDataTypes.Logger.log("************************")
@@ -122,5 +125,3 @@ enum ServerSyncError: Error {
 extension SyncForm: Content {
     
 }
-
-//MARK: Move to PrepDataTypes
