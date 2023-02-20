@@ -8,8 +8,8 @@ extension SyncController {
     func constructUpdates(for syncForm: SyncForm, db: Database) async throws -> SyncForm.Updates {
         let days = try await updatedDays(for: syncForm, db: db)
         let meals = try await updatedMeals(for: syncForm, db: db)
-        let foods = try await updatedFoods(for: syncForm, db: db)
         let foodItems = try await updatedFoodItems(for: syncForm, db: db)
+        let foods = try await updatedFoods(for: syncForm, using: foodItems, db: db)
         let goalSets = try await updatedGoalSets(for: syncForm, db: db)
         let fastingActivities = try await updatedFastingActivities(for: syncForm, db: db)
         
@@ -38,10 +38,24 @@ extension SyncController {
         return userId
     }
 
-    func updatedFoods(for syncForm: SyncForm, db: Database) async throws -> [PrepDataTypes.Food]? {
+    func updatedFoods(for syncForm: SyncForm, using updatedFoodItems: [PrepDataTypes.FoodItem]?, db: Database) async throws -> [PrepDataTypes.Food]? {
         let userFoods = try await updatedUserFoods(for: syncForm, db: db) ?? []
         let presetFoods = try await updatedPresetFoods(for: syncForm, db: db) ?? []
-        return userFoods + presetFoods
+        
+        var foods = userFoods + presetFoods
+        
+        if let updatedFoodItems {
+            /// If we have updated food items—get any `PresetFood`'s that aren't already in `foods` and
+            /// send them across in case the device hasn't got them cached
+            for foodItem in updatedFoodItems {
+                guard foodItem.food.dataset != nil,
+                      !foods.contains(where: { $0.id == foodItem.food.id})
+                else { continue }
+                foods.append(foodItem.food)
+            }
+        }
+        
+        return foods
     }
     
     func updatedUserFoods(for syncForm: SyncForm, db: Database) async throws -> [PrepDataTypes.Food]? {
