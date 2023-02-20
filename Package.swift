@@ -15,7 +15,7 @@ let package = Package(
         /// We're using this revision to use the live activity APIs that are still in beta
         .package(url: "https://github.com/vapor/apns.git", revision: "3c9cfc4ae9c3cb8765ea4e99ca81688ab28d1493"),
         
-        .package(url: "https://github.com/pxlshpr/PrepDataTypes", from: "0.0.264"),
+        .package(url: "https://github.com/pxlshpr/PrepDataTypes", from: "0.0.265"),
     ],
     targets: [
         .target(
