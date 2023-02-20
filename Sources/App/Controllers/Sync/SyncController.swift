@@ -24,17 +24,21 @@ struct SyncController: RouteCollection {
     }
 
     func performSync(req: Request) async throws -> SyncForm {
-        let deviceSyncForm = try req.content.decode(SyncForm.self)
+        let requestSyncForm = try req.content.decode(SyncForm.self)
 
-        try await processSyncForm(deviceSyncForm, db: req.db)
-        return try await constructSyncForm(for: deviceSyncForm, db: req.db)
+        try await processSyncForm(requestSyncForm, db: req.db)
+        let responseSyncForm = try await constructSyncForm(for: requestSyncForm, db: req.db)
+        
+        /// If either request or response `SyncForm` is not empty, log it
+        if !requestSyncForm.isEmpty || !responseSyncForm.isEmpty {
+            requestSyncForm.log(emoji: "📱", isRequest: true)
+            responseSyncForm.log(emoji: "💧", isRequest: false)
+        }
+        
+        return responseSyncForm
     }
 
     func processSyncForm(_ syncForm: SyncForm, db: Database) async throws {
-        if !syncForm.isEmpty {
-            syncForm.log(emoji: "📱", isRequest: true)
-        }
-
         if let updates = syncForm.updates {
             try await processUpdates(
                 updates,
