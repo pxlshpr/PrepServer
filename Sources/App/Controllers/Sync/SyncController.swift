@@ -68,6 +68,10 @@ struct SyncController: RouteCollection {
         )
         if !syncForm.isEmpty {
             print("💧→ Sending \(syncForm.description)")
+        } else {
+            let message = "💧→ Empty response"
+            print(message)
+            Logger.log(message)
         }
         return syncForm
     }
@@ -116,4 +120,59 @@ enum ServerSyncError: Error {
 
 extension SyncForm: Content {
     
+}
+
+func log(_ message: String) {
+    func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
+    }
+    
+    let filename = getDocumentsDirectory().appendingPathComponent("output.txt")
+
+    do {
+        try message.write(to: filename, atomically: true, encoding: String.Encoding.utf8)
+        print("Wrote to: \(filename)")
+    } catch {
+        // failed to write file – bad permissions, bad filename, missing permissions, or more likely it can't be converted to the encoding
+        print("Could not wrote to: \(filename) – \(error)")
+    }
+}
+
+
+class Logger {
+
+    static var logFile: URL? {
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let dateString = formatter.string(from: Date())
+        let fileName = "server_\(dateString).log"
+        return documentsDirectory.appendingPathComponent(fileName)
+    }
+
+    static func log(_ message: String) {
+        guard let logFile = logFile else {
+            return
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        let timestamp = formatter.string(from: Date())
+        guard let data = (timestamp + ": " + message + "\n").data(using: String.Encoding.utf8) else { return }
+
+        do {
+            if FileManager.default.fileExists(atPath: logFile.path) {
+                let fileHandle = try FileHandle(forWritingTo: logFile)
+                fileHandle.seekToEndOfFile()
+                fileHandle.write(data)
+                fileHandle.closeFile()
+            } else {
+                try data.write(to: logFile, options: .atomicWrite)
+            }
+            print("Wrote to: \(logFile)")
+        } catch {
+            print("Could not wrote to: \(logFile) – \(error)")
+        }
+    }
 }
