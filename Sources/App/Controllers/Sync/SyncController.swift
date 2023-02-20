@@ -64,6 +64,7 @@ struct SyncController: RouteCollection {
             updates: updates,
             deletions: deletions,
             userId: userId,
+            deviceModelName: "server",
             versionTimestamp: timestamp
         )
         if !syncForm.isEmpty {

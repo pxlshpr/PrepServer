@@ -5,9 +5,9 @@ import PrepDataTypes
 extension SyncController {
 
     func processUpdatedDeviceFoodUsages(_ deviceFoodUsages: [PrepDataTypes.FoodUsage], on db: Database) async throws {
-        for deviceFoodUsage in deviceFoodUsages {
+//        for deviceFoodUsage in deviceFoodUsages {
 //            try await processUpdatedDeviceFoodUsage(deviceFoodUsage, on: db)
-        }
+//        }
     }
 
 //    func processUpdatedDeviceFoodUsage(_ deviceFoodUsage: PrepDataTypes.FoodUsage, on db: Database) async throws {
