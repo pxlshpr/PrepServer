@@ -12,7 +12,7 @@ final class QuickMealItem: Model, Content {
     @OptionalField(key: "deleted_at") var deletedAt: Double?
 
     @Field(key: "name") var name: String
-    @OptionalField(key: "nutrients") var nutrients: QuickMealNutrients?
+    @OptionalField(key: "nutrients") var nutrients: QuickNutrients?
     @OptionalField(key: "image_ids") var imageIds: [UUID]?
 
     init() { }
