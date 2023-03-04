@@ -200,7 +200,7 @@ extension SyncController {
             serverUser.cloudKitId = deviceUser.cloudKitId
         }
         
-        serverUser.units = deviceUser.units
+        serverUser.options = deviceUser.options
         serverUser.bodyProfile = deviceUser.bodyProfile
     }
 

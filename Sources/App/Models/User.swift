@@ -10,7 +10,7 @@ final class User: Model, Content {
     @Field(key: "created_at") var createdAt: Double
     @Field(key: "updated_at") var updatedAt: Double
 
-    @Field(key: "units") var units: UserUnits
+    @Field(key: "options") var options: UserOptions
     @OptionalField(key: "body_profile") var bodyProfile: BodyProfile?
     @OptionalField(key: "body_profile_updated_at") var bodyProfileUpdatedAt: Double?
 
@@ -26,14 +26,14 @@ final class User: Model, Content {
     
     init(
         cloudKitId: String,
-        units: UserUnits = .standard,
+        options: UserOptions = .standard,
         bodyProfile: BodyProfile? = nil,
         bodyProfileUpdatedAt: Double? = nil
     ) {
         self.id = UUID()
         self.cloudKitId = cloudKitId
         
-        self.units = units
+        self.options = options
         self.bodyProfile = bodyProfile
         self.bodyProfileUpdatedAt = bodyProfileUpdatedAt
         
@@ -45,7 +45,7 @@ final class User: Model, Content {
         self.id = deviceUser.id
         self.cloudKitId = deviceUser.cloudKitId
         
-        self.units = deviceUser.units
+        self.options = deviceUser.options
         self.bodyProfile = deviceUser.bodyProfile
         self.bodyProfileUpdatedAt = deviceUser.bodyProfileUpdatedAt
         
@@ -65,7 +65,7 @@ extension PrepDataTypes.User {
         self.init(
             id: id,
             cloudKitId: serverUser.cloudKitId,
-            units: serverUser.units,
+            options: serverUser.options,
             bodyProfile: serverUser.bodyProfile,
             syncStatus: .synced,
             updatedAt: serverUser.updatedAt
