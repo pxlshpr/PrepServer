@@ -13,8 +13,9 @@ extension SyncController {
         let goalSets = try await updatedGoalSets(for: syncForm, db: db)
         let fastingActivities = try await updatedFastingActivities(for: syncForm, db: db)
         
+        let user = try await updatedDeviceUser(for: syncForm, db: db)
         return SyncForm.Updates(
-            user: try await updatedDeviceUser(for: syncForm, db: db),
+            user: user,
             days: days,
             foods: foods,
             foodItems: foodItems,

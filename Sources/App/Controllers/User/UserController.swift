@@ -26,7 +26,9 @@ extension UserController {
         
         guard let user = users.first else {
             /// Create and return a new User
-            let newUser = User(cloudKitId: cloudKitId)
+            let deviceUser = PrepDataTypes.User(cloudKitId: cloudKitId)
+            let newUser = User(deviceUser: deviceUser)
+//            let newUser = User(cloudKitId: cloudKitId)
             try await newUser.save(on: db)
             return newUser
         }

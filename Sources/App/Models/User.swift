@@ -25,7 +25,7 @@ final class User: Model, Content {
     init() { }
     
     init(
-        cloudKitId: String,
+//        cloudKitId: String,
         options: UserOptions = .defaultOptions,
         bodyProfile: BodyProfile? = nil,
         bodyProfileUpdatedAt: Double? = nil
