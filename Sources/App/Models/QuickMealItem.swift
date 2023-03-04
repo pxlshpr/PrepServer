@@ -17,4 +17,3 @@ final class QuickMealItem: Model, Content {
 
     init() { }
 }
-
