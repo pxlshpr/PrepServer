@@ -14,7 +14,6 @@ extension SyncController {
         let fastingActivities = try await updatedFastingActivities(for: syncForm, db: db)
         
         let user = try await updatedDeviceUser(for: syncForm, db: db)
-        
         return SyncForm.Updates(
             user: user,
             days: days,
