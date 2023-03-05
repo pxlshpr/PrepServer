@@ -2,6 +2,10 @@ import Fluent
 import Vapor
 import PrepDataTypes
 
+func log(_ string: String) {
+    PrepDataTypes.Logger.log(string)
+}
+
 extension SyncController {
     
     /// For each entity in updates
