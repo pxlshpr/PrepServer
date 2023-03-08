@@ -11,8 +11,8 @@ final class User: Model, Content {
     @Field(key: "updated_at") var updatedAt: Double
 
     @Field(key: "options") var options: UserOptions
-    @OptionalField(key: "body_profile") var bodyProfile: BodyProfile?
-    @OptionalField(key: "body_profile_updated_at") var bodyProfileUpdatedAt: Double?
+    @OptionalField(key: "biometrics") var biometrics: Biometrics?
+    @OptionalField(key: "biometrics_updated_at") var biometricsUpdatedAt: Double?
 
     @Children(for: \.$user) var days: [Day]
     @Children(for: \.$user) var foodUsages: [FoodUsage]
@@ -27,15 +27,15 @@ final class User: Model, Content {
     init(
 //        cloudKitId: String,
         options: UserOptions = .defaultOptions,
-        bodyProfile: BodyProfile? = nil,
-        bodyProfileUpdatedAt: Double? = nil
+        biometrics: Biometrics? = nil,
+        biometricsUpdatedAt: Double? = nil
     ) {
         self.id = UUID()
         self.cloudKitId = cloudKitId
         
         self.options = options
-        self.bodyProfile = bodyProfile
-        self.bodyProfileUpdatedAt = bodyProfileUpdatedAt
+        self.biometrics = biometrics
+        self.biometricsUpdatedAt = biometricsUpdatedAt
         
         self.createdAt = Date().timeIntervalSince1970
         self.updatedAt = Date().timeIntervalSince1970
@@ -46,8 +46,8 @@ final class User: Model, Content {
         self.cloudKitId = deviceUser.cloudKitId
         
         self.options = deviceUser.options
-        self.bodyProfile = deviceUser.bodyProfile
-        self.bodyProfileUpdatedAt = deviceUser.bodyProfileUpdatedAt
+        self.biometrics = deviceUser.biometrics
+        self.biometricsUpdatedAt = deviceUser.biometricsUpdatedAt
         
         self.createdAt = deviceUser.updatedAt
         self.updatedAt = deviceUser.updatedAt
@@ -66,7 +66,7 @@ extension PrepDataTypes.User {
             id: id,
             cloudKitId: serverUser.cloudKitId,
             options: serverUser.options,
-            bodyProfile: serverUser.bodyProfile,
+            biometrics: serverUser.biometrics,
             syncStatus: .synced,
             updatedAt: serverUser.updatedAt
         )

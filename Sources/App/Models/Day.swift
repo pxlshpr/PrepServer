@@ -14,7 +14,7 @@ final class Day: Model, Content {
     @Field(key: "calendar_day_string") var calendarDayString: String
     @Field(key: "marked_as_fasted") var markedAsFasted: Bool
 
-    @OptionalField(key: "body_profile") var bodyProfile: BodyProfile?
+    @OptionalField(key: "biometrics") var biometrics: Biometrics?
 
     @Children(for: \.$day) var meals: [Meal]
 
@@ -34,7 +34,7 @@ final class Day: Model, Content {
         self.updatedAt = timestamp
 
         self.calendarDayString = deviceDay.calendarDayString
-        self.bodyProfile = deviceDay.bodyProfile
+        self.biometrics = deviceDay.biometrics
         self.markedAsFasted = deviceDay.markedAsFasted
     }
 }
@@ -42,7 +42,7 @@ final class Day: Model, Content {
 extension Day {
     func update(with deviceDay: PrepDataTypes.Day, newGoalSetId: GoalSet.IDValue?) throws {
         self.$goalSet.id = newGoalSetId
-        self.bodyProfile = deviceDay.bodyProfile
+        self.biometrics = deviceDay.biometrics
         self.markedAsFasted = deviceDay.markedAsFasted
         self.updatedAt = Date().timeIntervalSince1970
     }
@@ -65,12 +65,12 @@ extension PrepDataTypes.Day {
             goalSet = nil
         }
         
-        //TODO: Check that bodyProfile is being handled properly
+        //TODO: Check that biometrics is being handled properly
         self.init(
             id: id,
             calendarDayString: serverDay.calendarDayString,
             goalSet: goalSet,
-            bodyProfile: serverDay.bodyProfile,
+            biometrics: serverDay.biometrics,
             markedAsFasted: serverDay.markedAsFasted,
             meals: [],
             syncStatus: .synced,

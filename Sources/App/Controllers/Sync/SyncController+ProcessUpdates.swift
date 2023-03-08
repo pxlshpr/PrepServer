@@ -205,7 +205,7 @@ extension SyncController {
         }
         
         serverUser.options = deviceUser.options
-        serverUser.bodyProfile = deviceUser.bodyProfile
+        serverUser.biometrics = deviceUser.biometrics
     }
 
     func user(forCloudKitId cloudKitId: String, db: Database) async throws -> User? {
