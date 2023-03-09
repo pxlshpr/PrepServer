@@ -9,7 +9,8 @@ struct CreateUser: AsyncMigration {
             .field("updated_at", .double, .required)
 
             .field("options", .json, .required)
-            .field("biometrics", .json, .required)
+//            .field("biometrics", .json, .required)
+            .field("biometrics", .json)
             .field("biometrics_updated_at", .double)
 
             .create()

@@ -11,7 +11,8 @@ final class User: Model, Content {
     @Field(key: "updated_at") var updatedAt: Double
 
     @Field(key: "options") var options: UserOptions
-    @Field(key: "biometrics") var biometrics: Biometrics
+//    @Field(key: "biometrics") var biometrics: Biometrics
+    @OptionalField(key: "biometrics") var biometrics: Biometrics?
     @OptionalField(key: "biometrics_updated_at") var biometricsUpdatedAt: Double?
 
     @Children(for: \.$user) var days: [Day]
@@ -27,7 +28,8 @@ final class User: Model, Content {
     init(
 //        cloudKitId: String,
         options: UserOptions = .defaultOptions,
-        biometrics: Biometrics = Biometrics(),
+//        biometrics: Biometrics = Biometrics(),
+        biometrics: Biometrics? = nil,
         biometricsUpdatedAt: Double? = nil
     ) {
         self.id = UUID()
