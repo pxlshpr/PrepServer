@@ -29,15 +29,13 @@ final class User: Model, Content {
 //        cloudKitId: String,
         options: UserOptions = .defaultOptions,
 //        biometrics: Biometrics = Biometrics(),
-        biometrics: Biometrics? = nil,
-        biometricsUpdatedAt: Double? = nil
+        biometrics: Biometrics? = nil
     ) {
         self.id = UUID()
         self.cloudKitId = cloudKitId
         
         self.options = options
         self.biometrics = biometrics
-        self.biometricsUpdatedAt = biometricsUpdatedAt
         
         self.createdAt = Date().timeIntervalSince1970
         self.updatedAt = Date().timeIntervalSince1970
@@ -49,7 +47,6 @@ final class User: Model, Content {
         
         self.options = deviceUser.options
         self.biometrics = deviceUser.biometrics
-        self.biometricsUpdatedAt = deviceUser.biometricsUpdatedAt
         
         self.createdAt = deviceUser.updatedAt
         self.updatedAt = deviceUser.updatedAt
