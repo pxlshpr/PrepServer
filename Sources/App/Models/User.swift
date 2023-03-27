@@ -13,7 +13,6 @@ final class User: Model, Content {
     @Field(key: "options") var options: UserOptions
 //    @Field(key: "biometrics") var biometrics: Biometrics
     @OptionalField(key: "biometrics") var biometrics: Biometrics?
-    @OptionalField(key: "biometrics_updated_at") var biometricsUpdatedAt: Double?
 
     @Children(for: \.$user) var days: [Day]
     @Children(for: \.$user) var foodUsages: [FoodUsage]
