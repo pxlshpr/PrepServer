@@ -63,7 +63,30 @@ public func configure(_ app: Application) throws {
     app.queues.scheduleEvery(FastingActivityCleanupJob(), minutes: 1)
 
     try app.configurePush()
+    
+    export(app)
 }
+
+func export(_ app: Application) {
+    
+    func write(_ encodable: [some Encodable], _ name: String) throws {
+        let json = try JSONEncoder().encode(encodable)
+        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let path = documentDirectory.appendingPathComponent("\(name).json")
+        try json.write(to: path)
+        print("🛶 Wrote: \(path)")
+    }
+
+    Task {
+        let presetFoods = try await PresetFood.query(on: app.db)
+            .with(\.$barcodes)
+            .all()
+        print("We have \(presetFoods.count) presetFoods")
+        
+        try write(presetFoods, "presetFoods")
+    }
+}
+
 
 import APNS
 
